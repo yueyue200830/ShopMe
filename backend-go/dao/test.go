@@ -40,6 +40,5 @@ func AddUser() {
 func GetUsers() []User {
 	var users []User
 	db.Find(&users)
-	fmt.Println(users)
 	return users
 }

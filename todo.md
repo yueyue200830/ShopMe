@@ -19,6 +19,7 @@
 - [ ] example of all products
 - [ ] session
 - [ ] extract config path
+- [ ] encrypt password
 
 ## database
 
