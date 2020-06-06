@@ -18,21 +18,15 @@ func UserApiRegister() {
 
 func (userController *UserController) GetAll(c *gin.Context) {
 	users := service.GetAll()
-	c.JSON(http.StatusOK, gin.H{
-		"users": users,
-	})
+	c.JSON(http.StatusOK, users)
 }
 
 func (userController *UserController) GetAllNames(c *gin.Context) {
 	userNames := service.GetAllUserNames()
-	c.JSON(http.StatusOK, gin.H{
-		"names": userNames,
-	})
+	c.JSON(http.StatusOK, userNames)
 }
 
 func (userController *UserController) GetAllUsers(c *gin.Context) {
 	users := service.GetAllUsers()
-	c.JSON(http.StatusOK, gin.H{
-		"users": users,
-	})
+	c.JSON(http.StatusOK, users)
 }
