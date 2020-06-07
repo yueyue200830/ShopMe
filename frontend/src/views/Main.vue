@@ -1,136 +1,68 @@
 <template>
-  <div>
-    <user-product-component>
-      <el-carousel height="500px" class="main-carousel" trigger="click" >
-        <el-carousel-item v-for="banner in banners" :key="banner">
-          <el-image :src="banner"/>
-        </el-carousel-item>
-      </el-carousel>
-      <div class="product-list" v-for="category in promote_products" :key="category">
-        <div class="product-list-title">
-          <div class="product-title">
-            {{category.title}}
-          </div>
-          <div class="product-list-more">
-            查看全部
-          </div>
+  <user-product-component>
+    <el-carousel height="500px" class="main-carousel" trigger="click">
+      <el-carousel-item v-for="banner in banners" :key="banner.id">
+        <el-image :src="banner.bannerPath"/>
+      </el-carousel-item>
+    </el-carousel>
+    <div class="product-list" v-for="category in promoteProducts" :key="category.title">
+      <div class="product-list-title">
+        <div class="product-title">
+          {{category.title}}
         </div>
-        <el-row :gutter="20">
-          <el-col :span="6" v-for="product in category.products" :key="product.name">
-            <product-card v-bind="product"/>
-          </el-col>
-        </el-row>
+        <div class="product-list-more" @click="showMore(category.category)">
+          查看全部
+        </div>
       </div>
-    </user-product-component>
-  </div>
+      <el-row :gutter="20">
+        <el-col :span="6" v-for="product in category.products" :key="product.id">
+          <product-card v-bind="product"/>
+        </el-col>
+      </el-row>
+    </div>
+  </user-product-component>
 </template>
 
 <script>
-  import UserProductComponent from "../components/UserProductComponent";
-  import ProductCard from "../components/ProductCard";
-  let main_img = require('../assets/main.jpg')
-  let product_img = require('../assets/product.jpg')
+  import UserProductComponent from '../components/UserProductComponent';
+  import ProductCard from '../components/ProductCard';
+
   export default {
-    name: "Main",
+    name: 'Main',
     components: {ProductCard, UserProductComponent},
     data() {
       return {
-        banners: [
-          main_img,
-          main_img,
-          main_img,
-          main_img
-        ],
-        promote_products: [{
-          title: "热销产品",
-          products: [{
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3799,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }]
-        }, {
-          title: "手机",
-          products: [{
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }, {
-            name: "小米10 Pro",
-            price: 3999,
-            img: product_img,
-          }]
-        }]
+        banners: [],
+        promoteProducts: []
+      }
+    },
+    created() {
+      this.$http
+        .get('/api/getMainBanners')
+        .then(response => {
+          let banners = response.data
+          for (let i = 0; i < banners.length; i++) {
+            banners[i]['bannerPath'] = '/api/banner/' + banners[i]['bannerPath']
+          }
+          this.banners = banners
+        })
+      this.$http
+        .get('/api/getPromoteProducts')
+        .then(response => {
+          let promoteProducts = response.data
+          for (let i = 0; i < promoteProducts.length; i++) {
+            for (let j = 0; j < promoteProducts[i]['products'].length; j++) {
+              promoteProducts[i]['products'][j]['image'] = '/api/product/' + promoteProducts[i]['products'][j]['image']
+            }
+          }
+          this.promoteProducts = promoteProducts
+        })
+    },
+    methods: {
+      showMore(category) {
+        this.$router.push(`/category/${category}`)
       }
     }
-    // data() {
-    //   return {
-    //     users: [{
-    //       id: null,
-    //       name: '',
-    //       email: '',
-    //       avatar_id: null
-    //     }]
-    //   }
-    // },
-    // created() {
-    //   this.$http
-    //     .get('api/getUsers')
-    //     .then(response => {
-    //       this.users = response.data
-    //     })
-    // }
   }
 </script>
 

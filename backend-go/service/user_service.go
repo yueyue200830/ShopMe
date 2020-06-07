@@ -5,12 +5,26 @@ import (
 	"backend-go/dao"
 )
 
-func GetAll() []dao.User {
-	return dao.GetAll()
+var userService *UserService
+
+type UserService struct {
+	userRepository *dao.UserRepository
 }
 
-func GetAllUserNames() []string {
-	userNames := dao.GetAllUserNames()
+func init() {
+	userService = &UserService{dao.GetUserRepository()}
+}
+
+func GetUserService() *UserService {
+	return userService
+}
+
+func (u *UserService) GetAll() []dao.User {
+	return u.userRepository.GetAll()
+}
+
+func (u *UserService) GetAllUserNames() []string {
+	userNames := u.userRepository.GetAllUserNames()
 	var names []string
 	for _, user := range userNames {
 		names = append(names, user.Name)
@@ -18,6 +32,21 @@ func GetAllUserNames() []string {
 	return names
 }
 
-func GetAllUsers() []dao.User {
-	return dao.GetAllUsers()
+func (u *UserService) GetAllUsers() []dao.User {
+	return u.userRepository.GetAllUsers()
+}
+
+// Return 0 for not found
+func (u *UserService) ValidateUser(user dao.User) (id int) {
+	return u.userRepository.GetUserIDByNameAndPassword(user)
+}
+
+// Check whether user name exists expect id itself
+func (u *UserService) ValidateUserName(name string, id int) bool {
+	userID := u.userRepository.GetUserIDByName(name)
+	if userID > 0 && id != userID {
+		return true
+ 	} else {
+ 		return false
+	}
 }

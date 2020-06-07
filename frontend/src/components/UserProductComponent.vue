@@ -10,11 +10,12 @@
 </template>
 
 <script>
-  import UserFooter from "./UserFooter";
-  import UserHeader from "./UserHeader";
-  import ProductHeader from "./ProductHeader";
+  import UserFooter from './UserFooter';
+  import UserHeader from './UserHeader';
+  import ProductHeader from './ProductHeader';
+
   export default {
-    name: "UserProductComponent",
+    name: 'UserProductComponent',
     components: {ProductHeader, UserHeader, UserFooter}
   }
 </script>
@@ -24,6 +25,6 @@
     width: 1220px;
     margin: 0 auto;
     min-height: calc(100vh - 181px);
-    padding: 10px 0;
+    padding: 10px 0 20px;
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="user-header">
     <div class="user-header-inner">
-      <div class="user-icon">
+      <div class="me-icon" @click="goMainPage">
         ME
       </div>
       <div class="user-header-info">
@@ -21,16 +21,19 @@
 
 <script>
   export default {
-    name: "UserHeader",
+    name: 'UserHeader',
     methods: {
       login() {
-        // todo: push to login
+        this.$router.push('/login')
       },
       register() {
         // todo: push to register
       },
       shoppingCart() {
         // todo: push to shopping cart
+      },
+      goMainPage() {
+        this.$router.push('/')
       }
     }
   }
@@ -53,8 +56,14 @@
     justify-content: space-between;
   }
 
-  .user-icon {
+  .me-icon {
     color: #eee;
+    padding: 5px 10px;
+    font-size: 18px;
+  }
+
+  .me-icon:hover {
+    cursor: pointer;
   }
 
   .user-header-info {

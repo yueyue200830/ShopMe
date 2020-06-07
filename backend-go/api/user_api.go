@@ -1,32 +1,67 @@
 package api
 
 import (
+	"backend-go/dao"
 	"backend-go/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type UserController struct {
+	userService *service.UserService
 }
 
-func UserApiRegister() {
-	curd := UserController{}
-	router.GET("/getAll", curd.GetAll)
-	router.GET("/getUsers", curd.GetAllUsers)
-	router.GET("/getUserNames", curd.GetAllNames)
+func userApiRegister(router *gin.Engine) {
+	curd := UserController{service.GetUserService()}
+	router.GET("/getAll", curd.getAll)
+	router.GET("/getUsers", curd.getAllUsers)
+	router.GET("/getUserNames", curd.getAllNames)
+	router.POST("/userLogin", curd.userLogin)
+	router.GET("/checkUserNameExist", curd.checkUserNameExist)
 }
 
-func (userController *UserController) GetAll(c *gin.Context) {
-	users := service.GetAll()
+func (u *UserController) getAll(c *gin.Context) {
+	users := u.userService.GetAll()
 	c.JSON(http.StatusOK, users)
 }
 
-func (userController *UserController) GetAllNames(c *gin.Context) {
-	userNames := service.GetAllUserNames()
+func (u *UserController) getAllNames(c *gin.Context) {
+	userNames := u.userService.GetAllUserNames()
 	c.JSON(http.StatusOK, userNames)
 }
 
-func (userController *UserController) GetAllUsers(c *gin.Context) {
-	users := service.GetAllUsers()
+func (u *UserController) getAllUsers(c *gin.Context) {
+	users := u.userService.GetAllUsers()
 	c.JSON(http.StatusOK, users)
+}
+
+func (u *UserController) userLogin(c *gin.Context) {
+	var user dao.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if user.Name == "" || user.Password == "" {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	id := u.userService.ValidateUser(user)
+	c.JSON(http.StatusOK, id)
+}
+
+func (u *UserController) checkUserNameExist(c *gin.Context) {
+	name := c.Query("name")
+	id, err := strconv.Atoi(c.DefaultQuery("id", "0"))
+	if err != nil || id < 0 {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	var exist int
+	if u.userService.ValidateUserName(name, id) {
+		exist = 1
+	} else {
+		exist = 0
+	}
+	c.JSON(http.StatusOK, exist)
 }

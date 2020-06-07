@@ -1,9 +1,9 @@
 <template>
   <el-card class="product-card" shadow="hover">
-    <img :src="img" width="240px"/>
+    <img :src="image" width="240px" height="240px"/>
     <div class="card-description">
       <div class="card-title">
-        {{name}}
+        {{title}}
       </div>
       <div class="card-price">
         {{price}}元
@@ -14,8 +14,8 @@
 
 <script>
   export default {
-    name: "ProductCard",
-    props: ["name", "price", "img"]
+    name: 'ProductCard',
+    props: ['id', 'title', 'price', 'image']
   }
 </script>
 

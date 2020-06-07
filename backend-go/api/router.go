@@ -6,11 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var router *gin.Engine
-
 func InitServer() {
-	router = gin.Default()
-	UserApiRegister()
+	router := gin.Default()
+	userApiRegister(router)
+	bannerApiRegister(router)
+	productApiRegister(router)
+	categoryApiRegister(router)
 	err := router.Run(":8000") // listen and serve on 0.0.0.0:8080
 	if err != nil {
 		fmt.Println("Start server failed!")
