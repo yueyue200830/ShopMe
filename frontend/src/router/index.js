@@ -4,6 +4,7 @@ import Main from '../views/Main'
 import Category from '../views/Category';
 import UserLogin from '../views/UserLogin';
 import UserRegister from '../views/UserRegister';
+import Product from "../views/Product";
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,10 @@ const routes = [
     path: '/register',
     name: 'UserRegister',
     component: UserRegister
+  }, {
+    path: '/product/:id',
+    name: 'Product',
+    component: Product
   }
 ]
 

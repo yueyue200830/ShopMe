@@ -52,7 +52,7 @@
           let promoteProducts = response.data
           for (let i = 0; i < promoteProducts.length; i++) {
             for (let j = 0; j < promoteProducts[i]['products'].length; j++) {
-              promoteProducts[i]['products'][j]['image'] = '/api/product/' + promoteProducts[i]['products'][j]['image']
+              promoteProducts[i]['products'][j]['image'] = '/api/product/image/' + promoteProducts[i]['products'][j]['image']
             }
           }
           this.promoteProducts = promoteProducts

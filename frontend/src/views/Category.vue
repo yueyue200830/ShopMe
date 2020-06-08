@@ -73,7 +73,7 @@
           .then(response => {
             let products = response.data
             for (let i = 0; i < products.length; i++) {
-              products[i]['image'] = '/api/product/' + products[i]['image']
+              products[i]['image'] = '/api/product/image/' + products[i]['image']
             }
             this.products = products
           })

@@ -1,11 +1,13 @@
 package dao
 
+import "fmt"
+
 type User struct {
-	ID       int    `json:"id" gorm:"primary_key"`
+	ID       int    `json:"id" gorm:"AUTO_INCREMENT"`
 	Name     string `json:"name"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
-	Avatar   int    `json:"avatarPath"`
+	Avatar   int    `json:"avatarPath" gorm:"default:NULL"`
 }
 
 var userRepository *UserRepository
@@ -50,3 +52,16 @@ func (u *UserRepository) GetUserIDByName(name string) int {
 	return user.ID
 }
 
+func (u *UserRepository) GetUserIDByEmail(email string) int {
+	var user User
+	db.Select("id").Where("email = ?", email).First(&user)
+	return user.ID
+}
+
+func (u *UserRepository) AddUser(user User) int {
+	if err := db.Create(&user).Error; err != nil {
+		fmt.Println(err)
+		return 4
+	}
+	return 0
+}

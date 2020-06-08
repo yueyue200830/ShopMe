@@ -19,6 +19,8 @@ func userApiRegister(router *gin.Engine) {
 	router.GET("/getUserNames", curd.getAllNames)
 	router.POST("/userLogin", curd.userLogin)
 	router.GET("/checkUserNameExist", curd.checkUserNameExist)
+	router.GET("/checkUserEmailExist", curd.checkUserEmailExist)
+	router.POST("/register", curd.register)
 }
 
 func (u *UserController) getAll(c *gin.Context) {
@@ -64,4 +66,34 @@ func (u *UserController) checkUserNameExist(c *gin.Context) {
 		exist = 0
 	}
 	c.JSON(http.StatusOK, exist)
+}
+
+func (u *UserController) checkUserEmailExist(c *gin.Context) {
+	email := c.Query("email")
+	id, err := strconv.Atoi(c.DefaultQuery("id", "0"))
+	if err != nil || id < 0 {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	var exist int
+	if u.userService.ValidateUserEmail(email, id) {
+		exist = 1
+	} else {
+		exist = 0
+	}
+	c.JSON(http.StatusOK, exist)
+}
+
+func (u *UserController) register(c *gin.Context) {
+	var user dao.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if user.Name == "" || user.Password == "" || user.Email == "" {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	status := u.userService.Register(user)
+	c.JSON(http.StatusOK, status)
 }

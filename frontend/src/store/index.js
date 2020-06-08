@@ -34,6 +34,7 @@ export default new Vuex.Store({
     },
     // 删除token
     userLogOut (state) {
+      console.log("store log out")
       state.Authorization = null
       localStorage.removeItem('Authorization')
     },

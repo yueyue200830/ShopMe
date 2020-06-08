@@ -5,11 +5,25 @@
         ME
       </div>
       <div class="user-header-info">
-        <div class="header-button" @click="login">
-          登录
+        <div class="header-button" v-if="hasLoggedIn">
+          <el-dropdown @command="handleUserMenuClick">
+            <span class="user-name-header">
+              {{ userName }}<i class="el-icon-arrow-down el-icon--right"/>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="info">个人信息</el-dropdown-item>
+              <el-dropdown-item command="orders">我的订单</el-dropdown-item>
+              <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
-        <div class="header-button" @click="register">
-          注册
+        <div class="user-header-info" v-else>
+          <div class="header-button" @click="login">
+            登录
+          </div>
+          <div class="header-button" @click="register">
+            注册
+          </div>
         </div>
         <div class="shopping-cart" @click="shoppingCart">
           购物车
@@ -20,20 +34,47 @@
 </template>
 
 <script>
+  import {mapMutations} from 'vuex'
+
   export default {
     name: 'UserHeader',
+    computed: {
+      hasLoggedIn() {
+        return this.$store.getters.hasLoggedIn
+      },
+      userId() {
+        return this.$store.getters.getUserId
+      },
+      userName() {
+        return this.$store.getters.getUserName
+      }
+    },
+    created() {
+      this.checkLogin()
+    },
     methods: {
+      ...mapMutations(['userLogOut', 'checkLogin']),
       login() {
         this.$router.push('/login')
       },
       register() {
-        // todo: push to register
+        this.$router.push('/register')
       },
       shoppingCart() {
         // todo: push to shopping cart
       },
       goMainPage() {
         this.$router.push('/')
+      },
+      handleUserMenuClick(command) {
+        if (command === "info") {
+          // todo: push to user info
+        } else if (command === "orders") {
+          // todo: push to orders
+        } else if (command === "logout") {
+          this.userLogOut()
+          // todo: push to main page if in user info page.
+        }
       }
     }
   }
@@ -87,5 +128,9 @@
 
   .shopping-cart:hover {
     cursor: pointer;
+  }
+
+  .user-name-header {
+    color: #aaa;
   }
 </style>

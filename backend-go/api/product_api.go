@@ -15,7 +15,7 @@ func productApiRegister(router *gin.Engine) {
 	curd := ProductController{service.GetProductService()}
 	router.GET("/getAllProducts", curd.getAllProducts)
 	router.GET("/getPromoteProducts", curd.getPromoteProducts)
-	router.GET("/product/:image", curd.getProductImage)
+	router.GET("/product/image/:image", curd.getProductImage)
 	router.GET("/getProducts", curd.getProductsByPage)
 	router.GET("/getProductNumber", curd.getProductNumber)
 }
