@@ -2,16 +2,21 @@
   <user-product-component>
     <div class="product-header">
       <div>
-        <img src="/api/product/image/mi10pro.jpg" class="product-image"/>
+        <el-image :src="product.image" class="product-image"/>
       </div>
       <div class="product-info">
         <div class="product-title">
-          小米10 Pro
+          {{product.title}}
         </div>
         <div class="product-price">
-          4999 元
+          {{product.price}} 元
         </div>
-        <button class="add-to-cart-button">加入购物车</button>
+        <button class="add-to-cart-button" v-if="product.stock>0" @click="addToCart">
+          加入购物车
+        </button>
+        <el-button class="cart-disable" type="info" plain disabled v-else>
+          已售罄
+        </el-button>
       </div>
     </div>
     <div class="product-details">
@@ -19,23 +24,99 @@
         产品介绍
       </div>
       <div class="title-divider"/>
-      <el-image style="width: 100%" :src="i1" lazy/>
-      <el-image style="width: 100%" :src="i2" lazy/>
+      <el-image
+          class="detail-image"
+          v-for="img in productDetails"
+          :key="img.order"
+          :src="img.detailPath"
+          lazy/>
     </div>
   </user-product-component>
 </template>
 
 <script>
-  let img1 = require('../assets/1.jpg')
-  let img2 = require('../assets/2.jpg')
   import UserProductComponent from '../components/UserProductComponent';
+
   export default {
     name: 'Product',
     components: {UserProductComponent},
+    computed: {
+      hasLoggedIn() {
+        return this.$store.getters.hasLoggedIn
+      },
+      userID() {
+        return this.$store.getters.getUserID
+      },
+    },
     data() {
       return {
-        i1: img1,
-        i2: img2
+        productID: this.$route.params.id,
+        product: {
+          id: null,
+          title: '',
+          image: '',
+          price: null,
+          stock: null,
+        },
+        productDetails: []
+      }
+    },
+    created() {
+      document.documentElement.scrollTop = 0;
+      this.getProductInfo()
+      this.getProductDetails()
+    },
+    methods: {
+      getProductInfo() {
+        this.$http
+          .get(`/api/product/${this.productID}`)
+          .then(response => {
+            if (response.data.code !== 0) {
+              this.$message.error('加载产品信息失败')
+              // todo: should add error page
+            } else {
+              let p = response.data.data
+              p['image'] = '/api/productImage/' + p['image']
+              this.product = p
+            }
+          })
+      },
+      getProductDetails() {
+        this.$http
+          .get('/api/productDetails', {
+            params: {
+              id: this.productID
+            }
+          })
+          .then(response => {
+            if (response.data.code !== 0) {
+              this.$message.error('产品详情加载失败')
+            } else {
+              let details = response.data.data
+              for (let i = 0; i < details.length; i++) {
+                details[i]['detailPath'] = '/api/productDetail/' + details[i]['detailPath']
+              }
+              this.productDetails = details
+            }
+          })
+      },
+      addToCart() {
+        if (!this.hasLoggedIn) {
+          this.$message.warning('您尚未登录，无法加入购物车')
+          return
+        }
+        this.$http
+          .post('/api/cardProduct', {
+            productID: parseInt(this.productID),
+            userID: this.userID,
+          })
+          .then(response => {
+            if (response.data === 0) {
+              this.$message.success('成功添加至购物车！')
+            } else {
+              this.$message.error('添加失败，请重试！')
+            }
+          })
       }
     }
   }
@@ -83,12 +164,19 @@
     color: #eeeeee;
     font-size: 18px;
     margin: 30px 10px;
-    outline:none;
+    outline: none;
   }
 
   .add-to-cart-button:hover {
     cursor: pointer;
     background-color: #e67147;
+  }
+
+  .cart-disable {
+    height: 50px;
+    padding: 10px 40px;
+    font-size: 18px;
+    margin: 30px 10px;
   }
 
   .product-details {
@@ -108,5 +196,9 @@
     height: 1px;
     margin: 0 20px 10px;
     background-color: #ccc;
+  }
+
+  .detail-image {
+    width: 100%;
   }
 </style>

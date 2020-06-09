@@ -37,30 +37,36 @@
       }
     },
     created() {
-      this.$http
-        .get('/api/getMainBanners')
-        .then(response => {
-          let banners = response.data
-          for (let i = 0; i < banners.length; i++) {
-            banners[i]['bannerPath'] = '/api/banner/' + banners[i]['bannerPath']
-          }
-          this.banners = banners
-        })
-      this.$http
-        .get('/api/getPromoteProducts')
-        .then(response => {
-          let promoteProducts = response.data
-          for (let i = 0; i < promoteProducts.length; i++) {
-            for (let j = 0; j < promoteProducts[i]['products'].length; j++) {
-              promoteProducts[i]['products'][j]['image'] = '/api/product/image/' + promoteProducts[i]['products'][j]['image']
-            }
-          }
-          this.promoteProducts = promoteProducts
-        })
+      this.getPromoteProducts()
+      this.getBanner()
     },
     methods: {
       showMore(category) {
         this.$router.push(`/category/${category}`)
+      },
+      getBanner() {
+        this.$http
+          .get('/api/mainBanners')
+          .then(response => {
+            let banners = response.data
+            for (let i = 0; i < banners.length; i++) {
+              banners[i]['bannerPath'] = '/api/banner/' + banners[i]['bannerPath']
+            }
+            this.banners = banners
+          })
+      },
+      getPromoteProducts() {
+        this.$http
+          .get('/api/promoteProducts')
+          .then(response => {
+            let promoteProducts = response.data
+            for (let i = 0; i < promoteProducts.length; i++) {
+              for (let j = 0; j < promoteProducts[i]['products'].length; j++) {
+                promoteProducts[i]['products'][j]['image'] = '/api/productImage/' + promoteProducts[i]['products'][j]['image']
+              }
+            }
+            this.promoteProducts = promoteProducts
+          })
       }
     }
   }

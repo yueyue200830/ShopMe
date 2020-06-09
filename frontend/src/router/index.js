@@ -4,7 +4,10 @@ import Main from '../views/Main'
 import Category from '../views/Category';
 import UserLogin from '../views/UserLogin';
 import UserRegister from '../views/UserRegister';
-import Product from "../views/Product";
+import Product from '../views/Product';
+import ShoppingCart from '../views/ShoppingCart';
+import Checkout from "../views/Checkout";
+import UserInfo from "../views/UserInfo";
 
 Vue.use(VueRouter)
 
@@ -29,6 +32,18 @@ const routes = [
     path: '/product/:id',
     name: 'Product',
     component: Product
+  }, {
+    path: '/cart',
+    name: 'ShoppingCart',
+    component: ShoppingCart
+  }, {
+    path: '/checkout',
+    name: 'Checkout',
+    component: Checkout,
+  }, {
+    path: '/userinfo',
+    name: 'UserInfo',
+    component: UserInfo
   }
 ]
 

@@ -31,7 +31,7 @@
     components: {ProductCard, UserProductComponent},
     data() {
       return {
-        categoryId: this.$route.params.id,
+        categoryID: this.$route.params.id,
         products: [],
         pageSize: 8,
         pageSizes: [8, 12, 16, 20],
@@ -46,7 +46,7 @@
     watch: {
       '$route': function (to) {
         if (to.name === "Category") {
-          this.categoryId = to.params.id
+          this.categoryID = to.params.id
           this.getProductNumber()
           this.getProducts()
         }
@@ -63,26 +63,31 @@
       },
       getProducts() {
         this.$http
-          .get('/api/getProducts', {
+          .get('/api/products', {
             params: {
               page: this.currentPage,
               size: this.pageSize,
-              category: this.categoryId
+              category: this.categoryID
             }
           })
           .then(response => {
-            let products = response.data
-            for (let i = 0; i < products.length; i++) {
-              products[i]['image'] = '/api/product/image/' + products[i]['image']
+            if (response.data.code !== 0){
+              this.$message.error("页面请求错误")
+              // todo: add error module
+            } else {
+              let products = response.data.data
+              for (let i = 0; i < products.length; i++) {
+                products[i]['image'] = '/api/productImage/' + products[i]['image']
+              }
+              this.products = products
             }
-            this.products = products
           })
       },
       getProductNumber() {
         this.$http
-          .get('/api/getProductNumber', {
+          .get('/api/productNumber', {
             params: {
-              category: this.categoryId
+              category: this.categoryID
             }
           })
           .then(response => {

@@ -1,21 +1,28 @@
 <template>
-  <el-card class="product-card" shadow="hover">
-    <img :src="image" width="240px" height="240px"/>
-    <div class="card-description">
-      <div class="card-title">
-        {{title}}
+  <div @click="clickProductCard(id)">
+    <el-card class="product-card" shadow="hover">
+      <img :src="image" width="240px" height="240px"/>
+      <div class="card-description">
+        <div class="card-title">
+          {{title}}
+        </div>
+        <div class="card-price">
+          {{price}}元
+        </div>
       </div>
-      <div class="card-price">
-        {{price}}元
-      </div>
-    </div>
-  </el-card>
+    </el-card>
+  </div>
 </template>
 
 <script>
   export default {
     name: 'ProductCard',
-    props: ['id', 'title', 'price', 'image']
+    props: ['id', 'title', 'price', 'image'],
+    methods: {
+      clickProductCard(id) {
+        this.$router.push(`/product/${id}`)
+      }
+    }
   }
 </script>
 

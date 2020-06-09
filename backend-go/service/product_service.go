@@ -74,3 +74,7 @@ func (p *ProductService) GetProductsByPage(page, pageSize, categoryID int) []dao
 		return p.productRepository.GetProductsByPageAndCategory(page, pageSize, categoryID)
 	}
 }
+
+func (p *ProductService) GetProductInfo(id int) dao.Product {
+	return p.productRepository.GetProductByID(id)
+}

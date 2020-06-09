@@ -12,6 +12,7 @@
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="info">个人信息</el-dropdown-item>
+              <el-dropdown-item command="password">修改密码</el-dropdown-item>
               <el-dropdown-item command="orders">我的订单</el-dropdown-item>
               <el-dropdown-item command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -42,8 +43,8 @@
       hasLoggedIn() {
         return this.$store.getters.hasLoggedIn
       },
-      userId() {
-        return this.$store.getters.getUserId
+      userID() {
+        return this.$store.getters.getUserID
       },
       userName() {
         return this.$store.getters.getUserName
@@ -61,14 +62,16 @@
         this.$router.push('/register')
       },
       shoppingCart() {
-        // todo: push to shopping cart
+        this.$router.push('/cart')
       },
       goMainPage() {
         this.$router.push('/')
       },
       handleUserMenuClick(command) {
         if (command === "info") {
-          // todo: push to user info
+          this.$router.push('/userInfo')
+        } else if (command === "password") {
+          // todo: push to password
         } else if (command === "orders") {
           // todo: push to orders
         } else if (command === "logout") {

@@ -11,7 +11,7 @@ export default new Vuex.Store({
     hasLoggedIn: (state) => {
       return state.Authorization != null
     },
-    getUserId: (state) => {
+    getUserID: (state) => {
       if (state.Authorization == null) {
         return null
       }

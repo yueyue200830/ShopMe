@@ -126,7 +126,7 @@
   }
 
   .user-body {
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 141px);
   }
 
   .user-title {

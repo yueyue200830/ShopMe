@@ -63,3 +63,9 @@ func (p *ProductRepository) GetProductsByPageAndCategory(page, pageSize, categor
 	db.Where("category_id = ?", categoryID).Order("id desc").Offset((page - 1) * pageSize).Limit(pageSize).Find(&products)
 	return products
 }
+
+func (p *ProductRepository) GetProductByID(id int) Product {
+	var product Product
+	db.First(&product, id)
+	return product
+}

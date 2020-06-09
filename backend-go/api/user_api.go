@@ -38,32 +38,36 @@ func (u *UserController) getAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+// return 0 for not found or other error input cases
 func (u *UserController) userLogin(c *gin.Context) {
 	var user dao.User
+	id := -1
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		id = 0
 	}
 	if user.Name == "" || user.Password == "" {
-		c.Status(http.StatusBadRequest)
-		return
+		id = 0
 	}
-	id := u.userService.ValidateUser(user)
+	if id == -1 {
+		id = u.userService.ValidateUser(user)
+	}
+
 	c.JSON(http.StatusOK, id)
 }
 
+// Return 1 when name exist, 0 otherwise
 func (u *UserController) checkUserNameExist(c *gin.Context) {
+	var exist int
 	name := c.Query("name")
 	id, err := strconv.Atoi(c.DefaultQuery("id", "0"))
 	if err != nil || id < 0 {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-	var exist int
-	if u.userService.ValidateUserName(name, id) {
-		exist = 1
-	} else {
 		exist = 0
+	} else {
+		if u.userService.ValidateUserName(name, id) {
+			exist = 1
+		} else {
+			exist = 0
+		}
 	}
 	c.JSON(http.StatusOK, exist)
 }
@@ -86,14 +90,14 @@ func (u *UserController) checkUserEmailExist(c *gin.Context) {
 
 func (u *UserController) register(c *gin.Context) {
 	var user dao.User
+	status := -1
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		status = 4
+	} else if user.Name == "" || user.Password == "" || user.Email == "" {
+		status = 4
+	} else {
+		status = u.userService.Register(user)
 	}
-	if user.Name == "" || user.Password == "" || user.Email == "" {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-	status := u.userService.Register(user)
+
 	c.JSON(http.StatusOK, status)
 }

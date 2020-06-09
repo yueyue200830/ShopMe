@@ -16,7 +16,7 @@
 
   export default {
     name: 'UserProductComponent',
-    components: {ProductHeader, UserHeader, UserFooter}
+    components: {ProductHeader, UserHeader, UserFooter},
   }
 </script>
 
@@ -24,7 +24,7 @@
   .user-body {
     width: 1220px;
     margin: 0 auto;
-    min-height: calc(100vh - 181px);
+    min-height: calc(100vh - 210px);
     padding: 10px 0 20px;
   }
 </style>
