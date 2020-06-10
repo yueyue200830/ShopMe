@@ -1,5 +1,8 @@
 <template>
   <user-product-component>
+    <div class="user-title">
+      个人信息
+    </div>
     <div class="user-info-body">
       <div class="user-avatar">
         <el-image
@@ -44,7 +47,7 @@
 </template>
 
 <script>
-  import UserProductComponent from "../components/UserProductComponent";
+  import UserProductComponent from '../components/UserProductComponent';
 
   export default {
     name: 'UserInfo',
@@ -131,6 +134,14 @@
 </script>
 
 <style scoped>
+  .user-title {
+    background-color: white;
+    text-align: center;
+    font-size: 24px;
+    padding: 40px 0 0;
+    margin-top: 20px;
+  }
+
   .user-info-body {
     background-color: white;
     display: flex;

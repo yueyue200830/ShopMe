@@ -19,6 +19,18 @@ func GetOrderService() *OrderService {
 	return orderService
 }
 
-func (o *OrderService) GetOne() entity.Order {
-	return o.orderRepository.GetOne()
+func (o *OrderService) GetOrder(id int) *entity.Order {
+	return o.orderRepository.GetOrderByID(id)
+}
+
+func (o *OrderService) GetUserOrders(userID int) []entity.Order {
+	return o.orderRepository.GetOrdersByID(userID)
+}
+
+func (o *OrderService) GetUserOrderNumber(userID int) (number int) {
+	return o.orderRepository.GetOrderNumberByID(userID)
+}
+
+func (o *OrderService) GetUserOrdersByPage(page, pageSize, userID int) []entity.Order {
+	return o.orderRepository.GetOrdersByUserIDAndPage(page, pageSize, userID)
 }

@@ -6,8 +6,11 @@ import UserLogin from '../views/UserLogin';
 import UserRegister from '../views/UserRegister';
 import Product from '../views/Product';
 import ShoppingCart from '../views/ShoppingCart';
-import Checkout from "../views/Checkout";
-import UserInfo from "../views/UserInfo";
+import Checkout from '../views/Checkout';
+import UserInfo from '../views/UserInfo';
+import UserOrders from '../views/UserOrders';
+import Order from '../views/Order';
+import UserPassword from '../views/UserPassword';
 
 Vue.use(VueRouter)
 
@@ -41,9 +44,21 @@ const routes = [
     name: 'Checkout',
     component: Checkout,
   }, {
-    path: '/userinfo',
+    path: '/user/info',
     name: 'UserInfo',
     component: UserInfo
+  }, {
+    path: '/user/orders',
+    name: 'UserOrders',
+    component: UserOrders
+  }, {
+    path: '/user/order',
+    name: 'UserOrder',
+    component: Order,
+  }, {
+    path: '/user/password',
+    name: 'UserPassword',
+    component: UserPassword
   }
 ]
 

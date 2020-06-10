@@ -56,7 +56,7 @@ func (p *ProductController) getProductsByPage(c *gin.Context) {
 	if status == 0 {
 		products = p.productService.GetProductsByPage(page, pageSize, categoryID)
 	}
-	if len(products) == 0 {
+	if products == nil || len(products) == 0 {
 		status = 1
 	}
 
@@ -69,7 +69,7 @@ func (p *ProductController) getProductsByPage(c *gin.Context) {
 func (p *ProductController) getProductNumber(c *gin.Context) {
 	number := 0
 	categoryID, err := strconv.Atoi(c.DefaultQuery("category", "0"))
-	if err == nil || categoryID >= 0 {
+	if err == nil && categoryID >= 0 {
 		number = p.productService.GetProductNumber(categoryID)
 	}
 

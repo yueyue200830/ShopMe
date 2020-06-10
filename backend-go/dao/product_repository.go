@@ -33,14 +33,12 @@ func (p *ProductRepository) GetNewProductsOnCategory(num, categoryID int) []enti
 	return products
 }
 
-func (p *ProductRepository) GetProductNumber() int {
-	var number int
+func (p *ProductRepository) GetProductNumber() (number int) {
 	db.Model(&entity.Product{}).Count(&number)
 	return number
 }
 
-func (p *ProductRepository) GetProductNumberByCategory(categoryID int) int {
-	var number int
+func (p *ProductRepository) GetProductNumberByCategory(categoryID int) (number int) {
 	db.Model(&entity.Product{}).Where("category_id = ?", categoryID).Count(&number)
 	return number
 }
@@ -53,7 +51,8 @@ func (p *ProductRepository) GetProductsByPage(page, pageSize int) []entity.Produ
 
 func (p *ProductRepository) GetProductsByPageAndCategory(page, pageSize, categoryID int) []entity.Product {
 	var products []entity.Product
-	db.Where("category_id = ?", categoryID).Order("id desc").Offset((page - 1) * pageSize).Limit(pageSize).Find(&products)
+	offsetNum := (page - 1) * pageSize
+	db.Where("category_id = ?", categoryID).Order("id desc").Offset(offsetNum).Limit(pageSize).Find(&products)
 	return products
 }
 

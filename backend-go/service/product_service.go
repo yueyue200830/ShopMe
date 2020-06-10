@@ -38,20 +38,6 @@ func (p *ProductService) GetProductPath(image string) string {
 	return "../images/products/" + image
 }
 
-func (p *ProductService) GetProductPages(pageSize, categoryID int) int {
-	var number int
-	if categoryID == 0 {
-		number = p.productRepository.GetProductNumber()
-	} else {
-		number = p.productRepository.GetProductNumberByCategory(categoryID)
-	}
-	pages := number / pageSize
-	if number % pageSize != 0 {
-		pages = pages + 1
-	}
-	return pages
-}
-
 func (p *ProductService) GetProductNumber(categoryID int) int {
 	var number int
 	if categoryID == 0 {

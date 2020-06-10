@@ -69,11 +69,11 @@
       },
       handleUserMenuClick(command) {
         if (command === "info") {
-          this.$router.push('/userInfo')
+          this.$router.push('/user/info')
         } else if (command === "password") {
-          // todo: push to password
+          this.$router.push('/user/password')
         } else if (command === "orders") {
-          // todo: push to orders
+          this.$router.push('/user/orders')
         } else if (command === "logout") {
           this.userLogOut()
           // todo: push to main page if in user info page.
@@ -89,6 +89,7 @@
     color: #aaa;
     height: 50px;
     padding: 5px;
+    min-width: 1220px;
   }
 
   .user-header-inner {

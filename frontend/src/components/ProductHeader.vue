@@ -51,6 +51,7 @@
   .product-header-back {
     width: 100%;
     background-color: white;
+    min-width: 1220px;
   }
 
   .category-item {

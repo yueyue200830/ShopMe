@@ -7,8 +7,12 @@
       <div class="user-title">
         用户注册
       </div>
-      <el-form :model="registerForm" status-icon :rules="rules" ref="registerForm" label-width="100px"
-               class="register-form">
+      <el-form
+          :model="registerForm"
+          status-icon
+          :rules="rules"
+          ref="registerForm"
+          label-width="100px">
         <el-form-item label="用户名" prop="name">
           <el-input
               type="name"
