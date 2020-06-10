@@ -3,6 +3,7 @@ package service
 
 import (
 	"backend-go/dao"
+	"backend-go/entity"
 	"fmt"
 	"regexp"
 )
@@ -21,7 +22,7 @@ func GetUserService() *UserService {
 	return userService
 }
 
-func (u *UserService) GetAll() []dao.User {
+func (u *UserService) GetAll() []entity.User {
 	return u.userRepository.GetAll()
 }
 
@@ -34,12 +35,12 @@ func (u *UserService) GetAllUserNames() []string {
 	return names
 }
 
-func (u *UserService) GetAllUsers() []dao.User {
+func (u *UserService) GetAllUsers() []entity.User {
 	return u.userRepository.GetAllUsers()
 }
 
 // Return 0 for not found
-func (u *UserService) ValidateUser(user dao.User) (id int) {
+func (u *UserService) ValidateUser(user entity.User) (id int) {
 	return u.userRepository.GetUserIDByNameAndPassword(user)
 }
 
@@ -64,7 +65,7 @@ func (u *UserService) ValidateUserEmail(email string, id int) bool {
 }
 
 // 0 -> ok, 1 -> nameError, 2 -> emailError, 3 -> passwordError, 4 -> other
-func (u *UserService) Register(user dao.User) int {
+func (u *UserService) Register(user entity.User) int {
 	match, err := regexp.MatchString("^[a-zA-Z0-9_\u4e00-\u9fa5]{4,20}$", user.Name)
 	if err != nil {
 		fmt.Println(err)

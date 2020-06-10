@@ -1,10 +1,6 @@
 package dao
 
-type ProductDetail struct {
-	ProductID     int    `json:"productID" gorm:"primary_key;auto_increment:false"`
-	Detail string `json:"detailPath"`
-	Order  int    `json:"order" gorm:"primary_key;unique;auto_increment:false"`
-}
+import "backend-go/entity"
 
 var productDetailRepository *ProductDetailRepository
 
@@ -19,8 +15,8 @@ func GetProductDetailRepository() *ProductDetailRepository {
 	return productDetailRepository
 }
 
-func (p *ProductDetailRepository) GetDetailsByID(id int) []ProductDetail {
-	var productDetails []ProductDetail
+func (p *ProductDetailRepository) GetDetailsByID(id int) []entity.ProductDetail {
+	var productDetails []entity.ProductDetail
 	db.Where("product_id = ?", id).Order("order").Find(&productDetails)
 	return productDetails
 }

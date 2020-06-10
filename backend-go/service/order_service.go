@@ -1,6 +1,9 @@
 package service
 
-import "backend-go/dao"
+import (
+	"backend-go/dao"
+	"backend-go/entity"
+)
 
 var orderService *OrderService
 
@@ -16,6 +19,6 @@ func GetOrderService() *OrderService {
 	return orderService
 }
 
-func (o *OrderService) GetOne() dao.Order {
+func (o *OrderService) GetOne() entity.Order {
 	return o.orderRepository.GetOne()
 }

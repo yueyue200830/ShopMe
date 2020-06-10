@@ -1,7 +1,7 @@
 package api
 
 import (
-	"backend-go/dao"
+	"backend-go/entity"
 	"backend-go/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -52,7 +52,7 @@ func (p *ProductController) getProductsByPage(c *gin.Context) {
 	if err != nil || categoryID < 0 {
 		status = 1
 	}
-	var products []dao.Product
+	var products []entity.Product
 	if status == 0 {
 		products = p.productService.GetProductsByPage(page, pageSize, categoryID)
 	}
@@ -79,7 +79,7 @@ func (p *ProductController) getProductNumber(c *gin.Context) {
 // Get one product by id
 func (p *ProductController) getProductInfo(c *gin.Context) {
 	status := 0
-	var product dao.Product
+	var product entity.Product
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 1 {
 		status = 1

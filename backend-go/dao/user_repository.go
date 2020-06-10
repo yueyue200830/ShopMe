@@ -1,14 +1,9 @@
 package dao
 
-import "fmt"
-
-type User struct {
-	ID       int    `json:"id" gorm:"AUTO_INCREMENT"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	Avatar   int    `json:"avatarPath" gorm:"default:NULL"`
-}
+import (
+	"backend-go/entity"
+	"fmt"
+)
 
 var userRepository *UserRepository
 
@@ -23,42 +18,42 @@ func GetUserRepository() *UserRepository {
 	return userRepository
 }
 
-func (u *UserRepository) GetAll() []User {
-	var users []User
+func (u *UserRepository) GetAll() []entity.User {
+	var users []entity.User
 	db.Find(&users)
 	return users
 }
 
-func (u *UserRepository) GetAllUserNames() []User {
-	var users []User
+func (u *UserRepository) GetAllUserNames() []entity.User {
+	var users []entity.User
 	db.Select("name").Find(&users)
 	return users
 }
 
-func (u *UserRepository) GetAllUsers() []User {
-	var users []User
+func (u *UserRepository) GetAllUsers() []entity.User {
+	var users []entity.User
 	db.Select("id, name, email, avatar").Find(&users)
 	return users
 }
 
-func (u *UserRepository) GetUserIDByNameAndPassword(user User) int {
+func (u *UserRepository) GetUserIDByNameAndPassword(user entity.User) int {
 	db.Where(&user).First(&user)
 	return user.ID
 }
 
 func (u *UserRepository) GetUserIDByName(name string) int {
-	var user User
+	var user entity.User
 	db.Select("id").Where("name = ?", name).First(&user)
 	return user.ID
 }
 
 func (u *UserRepository) GetUserIDByEmail(email string) int {
-	var user User
+	var user entity.User
 	db.Select("id").Where("email = ?", email).First(&user)
 	return user.ID
 }
 
-func (u *UserRepository) AddUser(user User) int {
+func (u *UserRepository) AddUser(user entity.User) int {
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Println(err)
 		return 4

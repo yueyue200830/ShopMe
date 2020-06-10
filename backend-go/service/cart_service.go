@@ -2,6 +2,7 @@ package service
 
 import (
 	"backend-go/dao"
+	"backend-go/entity"
 )
 
 var cartService *CartService
@@ -18,11 +19,11 @@ func GetCartService() *CartService {
 	return cartService
 }
 
-func (c *CartService) GetCartProducts(id int) []dao.CartProduct {
+func (c *CartService) GetCartProducts(id int) []entity.CartProduct {
 	return c.cartRepository.GetUserProducts(id)
 }
 
-func (c *CartService) AddProduct(cart *dao.Cart) (status int) {
+func (c *CartService) AddProduct(cart *entity.Cart) (status int) {
 	num := cart.Num
 	if num == 0 {
 		num = 1
@@ -45,7 +46,7 @@ func (c *CartService) AddProduct(cart *dao.Cart) (status int) {
 	}
 }
 
-func (c *CartService) ModifyProduct(cart *dao.Cart) (status int) {
+func (c *CartService) ModifyProduct(cart *entity.Cart) (status int) {
 	err := c.cartRepository.UpdateCartNum(cart, cart.Num)
 	if err != nil {
 		return 1
@@ -55,7 +56,7 @@ func (c *CartService) ModifyProduct(cart *dao.Cart) (status int) {
 }
 
 func (c *CartService) DeleteProduct(productID, userID int) (status int) {
-	cart := &dao.Cart{UserID: userID, ProductID: productID}
+	cart := &entity.Cart{UserID: userID, ProductID: productID}
 	err := c.cartRepository.DeleteProduct(cart)
 	if err != nil {
 		return 1

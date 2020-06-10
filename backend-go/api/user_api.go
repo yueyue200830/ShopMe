@@ -1,7 +1,7 @@
 package api
 
 import (
-	"backend-go/dao"
+	"backend-go/entity"
 	"backend-go/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -40,7 +40,7 @@ func (u *UserController) getAllUsers(c *gin.Context) {
 
 // return 0 for not found or other error input cases
 func (u *UserController) userLogin(c *gin.Context) {
-	var user dao.User
+	var user entity.User
 	id := -1
 	if err := c.ShouldBindJSON(&user); err != nil {
 		id = 0
@@ -89,7 +89,7 @@ func (u *UserController) checkUserEmailExist(c *gin.Context) {
 }
 
 func (u *UserController) register(c *gin.Context) {
-	var user dao.User
+	var user entity.User
 	status := -1
 	if err := c.ShouldBindJSON(&user); err != nil {
 		status = 4

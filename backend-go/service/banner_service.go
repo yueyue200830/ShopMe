@@ -2,6 +2,7 @@ package service
 
 import (
 	"backend-go/dao"
+	"backend-go/entity"
 )
 
 var bannerService *BannerService
@@ -18,7 +19,7 @@ func GetBannerService() *BannerService {
 	return bannerService
 }
 
-func (b *BannerService) GetMainBanners() []dao.Banner {
+func (b *BannerService) GetMainBanners() []entity.Banner {
 	return b.bannerRepository.GetNewBanners(4)
 }
 

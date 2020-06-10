@@ -1,7 +1,7 @@
 package api
 
 import (
-	"backend-go/dao"
+	"backend-go/entity"
 	"backend-go/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -22,7 +22,7 @@ func cartApiRegister(router *gin.Engine) {
 
 func (c *CartController) getCardProducts(context *gin.Context) {
 	status := 0
-	var products []dao.CartProduct
+	var products []entity.CartProduct
 	id, err := strconv.Atoi(context.Query("id"))
 	if err != nil || id < 0 {
 		status = 1
@@ -37,7 +37,7 @@ func (c *CartController) getCardProducts(context *gin.Context) {
 
 func (c *CartController) addProduct(context *gin.Context) {
 	status := 0
-	var cart *dao.Cart
+	var cart *entity.Cart
 	if err := context.ShouldBindJSON(&cart); err != nil {
 		status = 1
 	} else {
@@ -48,7 +48,7 @@ func (c *CartController) addProduct(context *gin.Context) {
 
 func (c *CartController) modifyProductNumber(context *gin.Context) {
 	status := 0
-	var cart *dao.Cart
+	var cart *entity.Cart
 	if err := context.ShouldBindJSON(&cart); err != nil {
 		status = 1
 	} else {

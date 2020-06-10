@@ -2,13 +2,8 @@ package service
 
 import (
 	"backend-go/dao"
+	"backend-go/entity"
 )
-
-type PromoteSection struct {
-	Title    string        `json:"title"`
-	Category int           `json:"category"`
-	Products []dao.Product `json:"products"`
-}
 
 var productService *ProductService
 
@@ -24,17 +19,17 @@ func GetProductService() *ProductService {
 	return productService
 }
 
-func (p *ProductService) GetAllProducts() []dao.Product {
+func (p *ProductService) GetAllProducts() []entity.Product {
 	return p.productRepository.GetAllProducts()
 }
 
-func (p *ProductService) GetPromoteProducts() []PromoteSection {
+func (p *ProductService) GetPromoteProducts() []entity.PromoteSection {
 	num := 8
-	promoteSections := make([]PromoteSection, 0)
-	promoteSections = append(promoteSections, PromoteSection{"新品上市", 0, p.productRepository.GetNewProducts(num)})
+	promoteSections := make([]entity.PromoteSection, 0)
+	promoteSections = append(promoteSections, entity.PromoteSection{Title: "新品上市", Products: p.productRepository.GetNewProducts(num)})
 	categories := dao.GetCategoryRepository().GetAllCategories()
 	for _, category := range categories {
-		promoteSections = append(promoteSections, PromoteSection{category.Name, category.ID, p.productRepository.GetNewProductsOnCategory(num, category.ID)})
+		promoteSections = append(promoteSections, entity.PromoteSection{Title: category.Name, Category: category.ID, Products: p.productRepository.GetNewProductsOnCategory(num, category.ID)})
 	}
 	return promoteSections
 }
@@ -67,7 +62,7 @@ func (p *ProductService) GetProductNumber(categoryID int) int {
 	return number
 }
 
-func (p *ProductService) GetProductsByPage(page, pageSize, categoryID int) []dao.Product {
+func (p *ProductService) GetProductsByPage(page, pageSize, categoryID int) []entity.Product {
 	if categoryID == 0 {
 		return p.productRepository.GetProductsByPage(page, pageSize)
 	} else {
@@ -75,6 +70,6 @@ func (p *ProductService) GetProductsByPage(page, pageSize, categoryID int) []dao
 	}
 }
 
-func (p *ProductService) GetProductInfo(id int) dao.Product {
+func (p *ProductService) GetProductInfo(id int) entity.Product {
 	return p.productRepository.GetProductByID(id)
 }

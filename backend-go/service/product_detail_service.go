@@ -1,6 +1,9 @@
 package service
 
-import "backend-go/dao"
+import (
+	"backend-go/dao"
+	"backend-go/entity"
+)
 
 var productDetailService *ProductDetailService
 
@@ -16,7 +19,7 @@ func GetProductDetailService() *ProductDetailService {
 	return productDetailService
 }
 
-func (p *ProductDetailService) GetDetailsByID(id int) []dao.ProductDetail {
+func (p *ProductDetailService) GetDetailsByID(id int) []entity.ProductDetail {
 	return p.productDetailRepository.GetDetailsByID(id)
 }
 

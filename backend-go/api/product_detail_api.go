@@ -1,7 +1,7 @@
 package api
 
 import (
-	"backend-go/dao"
+	"backend-go/entity"
 	"backend-go/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -20,7 +20,7 @@ func productDetailApiRegister(router *gin.Engine) {
 
 func (p *ProductDetailController) getDetailsByID(c *gin.Context) {
 	status := 0
-	var details []dao.ProductDetail
+	var details []entity.ProductDetail
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil || id < 1 {
 		status = 1

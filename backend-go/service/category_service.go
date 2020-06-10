@@ -2,6 +2,7 @@ package service
 
 import (
 	"backend-go/dao"
+	"backend-go/entity"
 )
 
 var categoryService *CategoryService
@@ -18,7 +19,7 @@ func GetCategoryService() *CategoryService {
 	return categoryService
 }
 
-func (c *CategoryService) GetAllCategories() []dao.Category {
+func (c *CategoryService) GetAllCategories() []entity.Category {
 	return c.categoryService.GetAllCategories()
 }
 

@@ -1,9 +1,6 @@
 package dao
 
-type Category struct {
-	ID   int    `json:"id" gorm:"primary_key"`
-	Name string `json:"name"`
-}
+import "backend-go/entity"
 
 var categoryRepository *CategoryRepository
 
@@ -18,8 +15,8 @@ func GetCategoryRepository() *CategoryRepository {
 	return categoryRepository
 }
 
-func (c *CategoryRepository) GetAllCategories() []Category {
-	var categories []Category
+func (c *CategoryRepository) GetAllCategories() []entity.Category {
+	var categories []entity.Category
 	db.Find(&categories)
 	return categories
 }
