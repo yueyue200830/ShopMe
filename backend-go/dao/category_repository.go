@@ -1,7 +1,7 @@
 package dao
 
 type Category struct {
-	ID   int    `json:"id" gorm:"primary"`
+	ID   int    `json:"id" gorm:"primary_key"`
 	Name string `json:"name"`
 }
 

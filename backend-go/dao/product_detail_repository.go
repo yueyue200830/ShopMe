@@ -1,9 +1,9 @@
 package dao
 
 type ProductDetail struct {
-	ProductID     int    `json:"productID" gorm:"primary"`
+	ProductID     int    `json:"productID" gorm:"primary_key;auto_increment:false"`
 	Detail string `json:"detailPath"`
-	Order  int    `json:"order" gorm:"primary;unique"`
+	Order  int    `json:"order" gorm:"primary_key;unique;auto_increment:false"`
 }
 
 var productDetailRepository *ProductDetailRepository

@@ -1,7 +1,7 @@
 package dao
 
 type Banner struct {
-	ID        int    `json:"id" gorm:"primary"`
+	ID        int    `json:"id" gorm:"primary_key"`
 	Banner    string `json:"bannerPath"`
 	ProductID int    `json:"productID"`
 }

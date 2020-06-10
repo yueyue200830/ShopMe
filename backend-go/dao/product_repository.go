@@ -1,7 +1,7 @@
 package dao
 
 type Product struct {
-	ID         int     `json:"id" gorm:"primary"`
+	ID         int     `json:"id"`
 	Title      string  `json:"title"`
 	Stock      int     `json:"stock"`
 	Price      float32 `json:"price"`
