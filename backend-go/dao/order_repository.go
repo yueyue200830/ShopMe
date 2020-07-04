@@ -40,3 +40,9 @@ func (o *OrderRepository) GetOrdersByUserIDAndPage(page, pageSize, userID int) [
 	db.Where("user_id = ?", userID).Order("order_time desc").Offset(offSetNum).Limit(pageSize).Find(&orders)
 	return orders
 }
+
+func (o *OrderRepository) GetProductsByOrderID(orderID int) []entity.ProductOfOrder {
+	var products []entity.ProductOfOrder
+	db.Raw("select * from (select * from order_products where order_id = ?) as order_products join products on product_id = id", orderID).Scan(&products)
+	return products
+}

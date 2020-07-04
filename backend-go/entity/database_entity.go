@@ -32,7 +32,7 @@ type Order struct {
 	ID         int         `json:"id"`
 	UserID     int         `json:"userID"`
 	Status     OrderStatus `json:"status" gorm:"type:enum"`
-	Sum        int         `json:"sum"`
+	Sum        float32     `json:"sum"`
 	OrderTime  *time.Time  `json:"orderTime"`
 	PaidTime   *time.Time  `json:"paidTime"`
 	FinishTime *time.Time  `json:"finishTime"`
@@ -40,10 +40,10 @@ type Order struct {
 }
 
 type OrderProduct struct {
-	OrderID   int `json:"orderID" gorm:"primary_key;auto_increment:false"`
-	ProductID int `json:"productID" gorm:"primary_key;auto_increment:false"`
-	Num       int `json:"num"`
-	Price     int `json:"price"`
+	OrderID   int     `json:"orderID" gorm:"primary_key;auto_increment:false"`
+	ProductID int     `json:"productID" gorm:"primary_key;auto_increment:false"`
+	Num       int     `json:"num"`
+	Price     float32 `json:"price"`
 }
 
 type ProductDetail struct {

@@ -62,7 +62,7 @@ func (o *OrderController) getUserOrdersByPage(c *gin.Context) {
 		status = 1
 	}
 
-	var orders []entity.Order
+	var orders []entity.SimpleOrderWithProducts
 	if status == 0 {
 		orders = o.orderService.GetUserOrdersByPage(page, pageSize, userID)
 	}

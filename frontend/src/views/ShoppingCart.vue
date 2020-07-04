@@ -128,7 +128,7 @@
               this.$message.error('加载购物车失败')
             } else {
               let products = response.data.data
-              for (let i = 0; i < products.length; i++) {
+              for (let i = 0; i < products.length; ++i) {
                 products[i]['image'] = '/api/productImage/' + products[i]['image']
               }
               this.products = products

@@ -31,6 +31,14 @@ func (o *OrderService) GetUserOrderNumber(userID int) (number int) {
 	return o.orderRepository.GetOrderNumberByID(userID)
 }
 
-func (o *OrderService) GetUserOrdersByPage(page, pageSize, userID int) []entity.Order {
-	return o.orderRepository.GetOrdersByUserIDAndPage(page, pageSize, userID)
+func (o *OrderService) GetUserOrdersByPage(page, pageSize, userID int) []entity.SimpleOrderWithProducts {
+	orders := o.orderRepository.GetOrdersByUserIDAndPage(page, pageSize, userID)
+	ordersWithProducts := make([]entity.SimpleOrderWithProducts, 0)
+	for _, order := range orders {
+		products := o.orderRepository.GetProductsByOrderID(order.ID)
+		date := order.OrderTime.Format("2006-01-02")
+		curOrder := entity.SimpleOrderWithProducts{ID: order.ID, Date: date, Sum: order.Sum, Status: order.Status, Products: products}
+		ordersWithProducts = append(ordersWithProducts, curOrder)
+	}
+	return ordersWithProducts
 }
