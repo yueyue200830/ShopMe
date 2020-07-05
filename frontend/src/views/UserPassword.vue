@@ -13,8 +13,7 @@
             label-width="100px">
           <el-form-item
               label="旧密码"
-              :rules="[{ required: true, message: '密码不可为空'}]"
-              prop="password">
+              prop="originalPassword">
             <el-input
                 type="password"
                 placeholder="请输入旧密码"
@@ -63,6 +62,14 @@
   export default {
     name: 'UserPassword',
     components: {UserProductComponent},
+    computed: {
+      hasLoggedIn() {
+        return this.$store.getters.hasLoggedIn
+      },
+      userID() {
+        return this.$store.getters.getUserID
+      },
+    },
     data() {
       const checkPassword = (rule, value, callback) => {
         if (value === '') {
@@ -79,7 +86,7 @@
       const validatePassword = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'))
-        } else if (value !== this.registerForm.password) {
+        } else if (value !== this.updateForm.password) {
           callback(new Error('两次输入密码不一致!'))
         } else {
           callback()
@@ -99,12 +106,32 @@
           confirmPassword: [
             {validator: validatePassword, trigger: 'blur', required: true}
           ],
+          originalPassword: [
+            { required: true, message: '密码不可为空'}
+          ]
         }
       }
     },
     methods: {
       updatePassword() {
-
+        this.$refs['updateForm'].validate((valid) => {
+          if (valid) {
+            let data = new FormData();
+            data.append('id', this.userID)
+            data.append('oldPassword', this.updateForm.originalPassword)
+            data.append('newPassword', this.updateForm.password)
+            this.$http
+              .put('/api/userPassword', data)
+              .then(response => {
+                if (response.data !== 0) {
+                  this.$message.error("更新密码失败，请重试")
+                } else {
+                  this.$message.success("更新密码成功！")
+                  this.$refs['updateForm'].resetFields()
+                }
+              })
+          }
+        })
       }
     }
   }

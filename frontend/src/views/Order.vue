@@ -4,15 +4,14 @@
       <div class="order-title">
         订单详情
       </div>
-<!--      <div class="order-divider"/>-->
       <div class="order-no">
         订单号：{{order.id}}
       </div>
       <el-steps :active="step" align-center class="order-step">
-        <el-step title="取消" :description="order.cancelTime" v-if="hasCanceled()"/>
-        <el-step title="下单" :description="order.orderTime" />
-        <el-step title="付款" :description="order.paidTime" />
-        <el-step title="完成" :description="order.finishTime" />
+        <el-step title="取消" :description="order.cancelTime" icon="el-icon-error" :status="getCancelStatus()"/>
+        <el-step title="下单" :description="order.orderTime" icon="el-icon-s-order"/>
+        <el-step title="付款" :description="order.payTime" icon="el-icon-s-finance"/>
+        <el-step title="完成" :description="order.finishTime" icon="el-icon-s-goods"/>
       </el-steps>
       <div class="order-divider"/>
       <div class="product-list">
@@ -22,10 +21,10 @@
             {{product.title}}
           </div>
           <div class="product-price">
-            {{product.single_price}}元 × {{product.num}}
+            {{product.price}}元 × {{product.num}}
           </div>
           <div class="product-cal-price">
-            {{product.single_price * product.num}}
+            {{product.price * product.num}} 元
           </div>
         </div>
       </div>
@@ -59,79 +58,105 @@
 
 <script>
   import UserProductComponent from '../components/UserProductComponent';
+
   export default {
     name: 'Order',
     components: {UserProductComponent},
+    computed: {
+      hasLoggedIn() {
+        return this.$store.getters.hasLoggedIn
+      },
+      userID() {
+        return this.$store.getters.getUserID
+      },
+    },
     data() {
       return {
         orderID: this.$route.query.orderID,
-        order: {
-          id: 123123,
-          date: '2020年3月3日',
-          orderTime: '2020年5月3日 12:23',
-          paidTime: null,
-          finishTime: null,
-          cancelTime: null,
-          sum: '10000',
-          status: '已下单',
-          products: [{
-            id: 1,
-            title: '小米10 Pro',
-            num: 2,
-            image: '/api/productImage/mi10pro.jpg',
-            single_price: 3999
-          }, {
-            id: 2,
-            title: '小米10 Pro',
-            num: 1,
-            image: '/api/productImage/mi10pro.jpg',
-            single_price: 4999
-          }, {
-            id: 7,
-            title: '小米10 Pro',
-            num: 1,
-            image: '/api/productImage/mi10pro.jpg',
-            single_price: 4999
-          }, {
-            id: 9,
-            title: '小米10 Pro',
-            num: 1,
-            image: '/api/productImage/mi10pro.jpg',
-            single_price: 4999
-          }]
-        },
+        order: {},
         step: 0,
         paymentVisible: false
       }
     },
     created() {
-      this.updateStep()
+      this.getOrder()
     },
     methods: {
-      hasCanceled() {
-        return this.order.cancelTime !== null
+      getOrder() {
+        this.$http
+          .get('/api/order', {
+            params: {
+              id: this.orderID
+            }
+          })
+          .then(response => {
+            if (response.data.code !== 0) {
+              this.$message.error('加载订单失败')
+            } else {
+              let order = response.data.data
+              order.orderTime = this.convertTime(order.orderTime)
+              order.payTime = this.convertTime(order.payTime)
+              order.finishTime = this.convertTime(order.finishTime)
+              order.cancelTime = this.convertTime(order.cancelTime)
+              for (let i = 0; i < order['products'].length; ++i) {
+                order['products'][i]['image'] = '/api/productImage/' + order['products'][i]['image']
+              }
+              this.order = order
+              this.updateStep()
+            }
+          })
+      },
+      convertTime(time) {
+        if (time == null) {
+          return null
+        }
+        let t = time.substr(0, 19)
+        t = t.replace('T', ' ')
+        return t
+      },
+      getCancelStatus() {
+        if (this.order.cancelTime !== null) {
+          return "process"
+        } else {
+          return "wait"
+        }
       },
       updateStep() {
-        if (this.order.cancelTime != null) {
-          this.step = 0
-        } else if (this.order.finishTime != null) {
+        if (this.order.status === 'finished') {
+          this.step = 4
+        } else if (this.order.status === 'paid') {
           this.step = 3
-        } else if (this.order.paidTime != null) {
+        } else if (this.order.status === 'ordered') {
           this.step = 2
-        } else if (this.order.orderTime != null) {
-          this.step = 1
         } else {
           this.step = 0
         }
       },
       couldPay() {
-        return this.order.orderTime != null && this.order.paidTime == null
+        return this.order.cancelTime == null && this.order.payTime == null
       },
       couldCancel() {
         return this.order.cancelTime == null && this.order.finishTime == null
       },
       cancelOrder() {
-        // todo: cancel order
+        this.$confirm('取消订单？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(() => {
+          this.$http
+            .post('/api/cancelOrder', {
+              id: parseInt(this.orderID)
+            })
+            .then(response => {
+              if (response.data !== 0) {
+                this.$message.warning('取消订单失败，请重试')
+              } else {
+                this.$message.success('已取消订单')
+              }
+              this.getOrder()
+            })
+        }).catch(() => {
+        });
       },
       payOrder() {
         this.paymentVisible = true
@@ -141,11 +166,25 @@
           .then(() => {
             done();
           })
-          .catch(() => {});
+          .catch(() => {
+          });
       },
       paidOrder() {
-        // todo: send data to backend
-        this.paymentVisible = false
+        this.$http
+          .post('/api/payOrder', {
+            id: parseInt(this.orderID)
+          })
+          .then(response => {
+            if (response.data !== 0) {
+              this.$message.warning('付款失败，请重试')
+            } else {
+              this.$message.success('付款成功！')
+            }
+            this.getOrder()
+          })
+          .finally(() => {
+            this.paymentVisible = false
+          })
       }
     }
   }

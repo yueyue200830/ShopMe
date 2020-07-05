@@ -90,3 +90,42 @@ func (u *UserService) Register(user entity.User) int {
 	}
 	return u.userRepository.AddUser(user)
 }
+
+func (u *UserService) GetAvatarPath(image string) string {
+	return "../images/avatars/" + image
+}
+
+func (u *UserService) UpdatePassword(id int, oldPassword, newPassword string) int {
+	err := u.userRepository.UpdatePassword(id, oldPassword, newPassword)
+	if err != nil {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+func (u *UserService) GetUserInfo(id int) map[string]interface{} {
+	user := u.userRepository.GetUserInfo(id)
+	if user.Avatar == "" {
+		user.Avatar = "default.png"
+	}
+	info := map[string]interface{}{
+		"name": user.Name,
+		"email": user.Email,
+		"avatar": user.Avatar,
+	}
+	return info
+}
+
+func (u *UserService) UpdateUserInfo(user *entity.User) int {
+	match, err := regexp.MatchString("^[a-zA-Z0-9_\u4e00-\u9fa5]{4,20}$", user.Name)
+	if err != nil || !match {
+		return 1
+	}
+	match, err = regexp.MatchString("^[a-zA-Z0-9]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", user.Email)
+	if err != nil || !match {
+		return 1
+	}
+
+	return u.userRepository.UpdateNameAndEmail(user)
+}

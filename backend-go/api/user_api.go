@@ -21,6 +21,10 @@ func userApiRegister(router *gin.Engine) {
 	router.GET("/checkUserNameExist", curd.checkUserNameExist)
 	router.GET("/checkUserEmailExist", curd.checkUserEmailExist)
 	router.POST("/register", curd.register)
+	router.GET("/avatar/:image", curd.getAvatar)
+	router.PUT("/userPassword", curd.updatePassword)
+	router.GET("/user", curd.getUserInfo)
+	router.PUT("/user", curd.updateUserInfo)
 }
 
 func (u *UserController) getAll(c *gin.Context) {
@@ -99,5 +103,49 @@ func (u *UserController) register(c *gin.Context) {
 		status = u.userService.Register(user)
 	}
 
+	c.JSON(http.StatusOK, status)
+}
+
+func (u *UserController) getAvatar(c *gin.Context) {
+	avatarPath := u.userService.GetAvatarPath(c.Param("image"))
+	c.File(avatarPath)
+}
+
+func (u *UserController) updatePassword(c *gin.Context) {
+	oldPassword := c.PostForm("oldPassword")
+	newPassword := c.PostForm("newPassword")
+	status := 0
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		status = 1
+	} else {
+		status = u.userService.UpdatePassword(id, oldPassword, newPassword)
+	}
+	c.JSON(http.StatusOK, status)
+}
+
+func (u *UserController) getUserInfo(c *gin.Context) {
+	status := 0
+	var info map[string]interface{}
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		status = 1
+	} else {
+		info = u.userService.GetUserInfo(id)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": info,
+	})
+}
+
+func (u *UserController) updateUserInfo(c *gin.Context) {
+	var user *entity.User
+	status := 0
+	if err := c.ShouldBindJSON(&user); err != nil {
+		status = 1
+	} else {
+		status = u.userService.UpdateUserInfo(user)
+	}
 	c.JSON(http.StatusOK, status)
 }

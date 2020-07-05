@@ -11,6 +11,14 @@ type PromoteSection struct {
 	Products []Product `json:"products"`
 }
 
+type ProductOfOrder struct {
+	ID    int     `json:"id"`
+	Title string  `json:"title"`
+	Num   int     `json:"num"`
+	Image string  `json:"image"`
+	Price float32 `json:"price"`
+}
+
 type SimpleOrderWithProducts struct {
 	ID       int              `json:"id"`
 	Date     string           `json:"date"`
@@ -19,10 +27,7 @@ type SimpleOrderWithProducts struct {
 	Products []ProductOfOrder `json:"products"`
 }
 
-type ProductOfOrder struct {
-	ID    int     `json:"id"`
-	Title string  `json:"title"`
-	Num   int     `json:"num"`
-	Image string  `json:"image"`
-	Price float32 `json:"price"`
+type DetailOrderWithProducts struct {
+	Order
+	Products []ProductOfOrder `json:"products"`
 }

@@ -19,13 +19,16 @@ func GetOrderService() *OrderService {
 	return orderService
 }
 
-func (o *OrderService) GetOrder(id int) *entity.Order {
-	return o.orderRepository.GetOrderByID(id)
+func (o *OrderService) GetOrder(id int) *entity.DetailOrderWithProducts {
+	order := o.orderRepository.GetOrderByID(id)
+	products := o.orderRepository.GetProductsByOrderID(order.ID)
+	detailOrder := &entity.DetailOrderWithProducts{Order: *order, Products: products}
+	return detailOrder
 }
 
-func (o *OrderService) GetUserOrders(userID int) []entity.Order {
-	return o.orderRepository.GetOrdersByID(userID)
-}
+//func (o *OrderService) GetUserOrders(userID int) []entity.Order {
+//	return o.orderRepository.GetOrdersByID(userID)
+//}
 
 func (o *OrderService) GetUserOrderNumber(userID int) (number int) {
 	return o.orderRepository.GetOrderNumberByID(userID)
@@ -41,4 +44,22 @@ func (o *OrderService) GetUserOrdersByPage(page, pageSize, userID int) []entity.
 		ordersWithProducts = append(ordersWithProducts, curOrder)
 	}
 	return ordersWithProducts
+}
+
+func (o *OrderService) CancelOrder(order *entity.Order) {
+	o.orderRepository.UpdateOrderStatusToCancel(order)
+}
+
+func (o *OrderService) PayOrder(order *entity.Order) {
+	o.orderRepository.UpdateOrderStatusToPaid(order)
+}
+
+func (o *OrderService) NewOrder(orderProducts *entity.DetailOrderWithProducts) (status, id int) {
+	var err error
+	if err, id = o.orderRepository.InsertOrderAndProducts(orderProducts); err != nil {
+		status = 1
+	} else {
+		status = 0
+	}
+	return status, id
 }

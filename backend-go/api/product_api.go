@@ -33,7 +33,7 @@ func (p *ProductController) getPromoteProducts(c *gin.Context) {
 }
 
 func (p *ProductController) getProductImage(c *gin.Context) {
-	imagePath := p.productService.GetProductPath(c.Param("image"))
+	imagePath := p.productService.GetProductImagePath(c.Param("image"))
 	c.File(imagePath)
 }
 
@@ -95,4 +95,3 @@ func (p *ProductController) getProductInfo(c *gin.Context) {
 		"data": product,
 	})
 }
-

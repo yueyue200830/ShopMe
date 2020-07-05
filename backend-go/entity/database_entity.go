@@ -33,8 +33,8 @@ type Order struct {
 	UserID     int         `json:"userID"`
 	Status     OrderStatus `json:"status" gorm:"type:enum"`
 	Sum        float32     `json:"sum"`
-	OrderTime  *time.Time  `json:"orderTime"`
-	PaidTime   *time.Time  `json:"paidTime"`
+	OrderTime  time.Time   `json:"orderTime"`
+	PayTime    *time.Time  `json:"payTime"`
 	FinishTime *time.Time  `json:"finishTime"`
 	CancelTime *time.Time  `json:"cancelTime"`
 }
@@ -66,5 +66,5 @@ type User struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
-	Avatar   int    `json:"avatarPath" gorm:"default:NULL"`
+	Avatar   string `json:"avatarPath" gorm:"default:NULL"`
 }

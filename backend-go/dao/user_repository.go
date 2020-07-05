@@ -2,6 +2,7 @@ package dao
 
 import (
 	"backend-go/entity"
+	"errors"
 	"fmt"
 )
 
@@ -59,4 +60,43 @@ func (u *UserRepository) AddUser(user entity.User) int {
 		return 4
 	}
 	return 0
+}
+
+func (u *UserRepository) UpdatePassword(id int, oldPassword, newPassword string) error {
+	tx := db.Begin()
+
+	user := &entity.User{ID: id}
+	if err := tx.First(&user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if user.Password != oldPassword {
+		tx.Rollback()
+		return errors.New("wrong password")
+	}
+	if err := tx.Model(&user).Update("password", newPassword).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err:= tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *UserRepository) GetUserInfo(id int) *entity.User {
+	user := &entity.User{ID: id}
+	db.First(&user)
+	return user
+}
+
+func (u *UserRepository) UpdateNameAndEmail(user *entity.User) int {
+	status := 0
+	info := map[string]interface{}{"name": user.Name, "email": user.Email}
+	if err := db.Model(&user).Updates(info).Error; err != nil {
+		status = 1
+	}
+	return status
 }

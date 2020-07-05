@@ -53,7 +53,7 @@
           返回购物车
         </button>
         <button class="checkout-button" @click="makeOrder">
-          去结算
+          下单
         </button>
       </div>
     </div>
@@ -97,7 +97,23 @@
         this.sum = s
       },
       makeOrder() {
-
+        this.$http
+          .post('/api/order', {
+            userID: this.userID,
+            products: this.products
+          })
+          .then(response => {
+            if (response.data.code !== 0) {
+              this.$message.warning('下单失败，请重试')
+            } else {
+              this.$router.push({
+                path: '/user/order',
+                query: {
+                  orderID: response.data.data
+                }
+              })
+            }
+          })
       }
     }
   }

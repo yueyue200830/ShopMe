@@ -7,16 +7,20 @@
       <div class="user-avatar">
         <el-image
             style="width: 200px; height: 200px"
-            :src="url"
-            :fit="fit"></el-image>
+            :src="infoForm.avatar"
+            fit="fit"/>
       </div>
       <div class="info-form">
-        <el-form :model="registerForm" status-icon :rules="rules" ref="registerForm" label-width="100px"
-                 class="register-form">
+        <el-form
+            :model="infoForm"
+            status-icon
+            :rules="rules"
+            ref="infoForm"
+            label-width="100px">
           <el-form-item label="用户名" prop="name">
             <el-input
                 type="name"
-                v-model="registerForm.name"
+                v-model="infoForm.name"
                 maxlength="20"
                 minlength="4"
                 placeholder="请输入新用户名"
@@ -25,7 +29,7 @@
           <el-form-item label="邮箱" prop="email">
             <el-input
                 type="email"
-                v-model="registerForm.email"
+                v-model="infoForm.email"
                 maxlength="45"
                 minlength="4"
                 placeholder="请输入新邮箱"
@@ -52,6 +56,14 @@
   export default {
     name: 'UserInfo',
     components: {UserProductComponent},
+    computed: {
+      hasLoggedIn() {
+        return this.$store.getters.hasLoggedIn
+      },
+      userID() {
+        return this.$store.getters.getUserID
+      },
+    },
     data() {
       const checkName = (rule, value, callback) => {
         if (value === '') {
@@ -62,7 +74,8 @@
             this.$http
               .get('/api/checkUserNameExist', {
                 params: {
-                  name: value
+                  name: value,
+                  id: this.userID
                 }
               })
               .then(response => {
@@ -88,9 +101,10 @@
           let emailVerifier = /^[a-zA-Z0-9]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
           if (emailVerifier.test(value)) {
             this.$http
-              .get('api/checkUserEmailExist', {
+              .get('/api/checkUserEmailExist', {
                 params: {
-                  email: value
+                  email: value,
+                  id: this.userID
                 }
               })
               .then(response => {
@@ -111,9 +125,10 @@
       }
       return {
         updating: false,
-        registerForm: {
+        infoForm: {
           name: '',
-          email: ''
+          email: '',
+          avatar: '',
         },
         rules: {
           name: [
@@ -125,9 +140,46 @@
         }
       }
     },
+    created() {
+      this.getInfo()
+    },
     methods: {
       updateInfo() {
-
+        this.$refs['infoForm'].validate(valid => {
+          if (valid) {
+            this.$http
+              .put('/api/user', {
+                id: this.userID,
+                name: this.infoForm.name,
+                email: this.infoForm.email
+              })
+              .then(response => {
+                if (response.data !== 0) {
+                  this.$message.error('更新信息失败')
+                } else {
+                  this.$message.success('个人信息更新成功')
+                  this.getInfo()
+                }
+              })
+          }
+        })
+      },
+      getInfo() {
+        this.$http
+          .get('/api/user', {
+            params: {
+              id: this.userID
+            }
+          })
+          .then(response => {
+            if (response.data.code !== 0) {
+              this.$message.error('获取个人信息失败')
+            } else {
+              let info = response.data.data
+              info.avatar = '/api/avatar/' + info.avatar
+              this.infoForm = info
+            }
+          })
       }
     }
   }

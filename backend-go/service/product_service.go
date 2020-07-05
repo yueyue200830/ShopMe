@@ -34,7 +34,7 @@ func (p *ProductService) GetPromoteProducts() []entity.PromoteSection {
 	return promoteSections
 }
 
-func (p *ProductService) GetProductPath(image string) string {
+func (p *ProductService) GetProductImagePath(image string) string {
 	return "../images/products/" + image
 }
 

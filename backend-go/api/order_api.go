@@ -17,11 +17,14 @@ func orderApiRegister(router *gin.Engine) {
 	router.GET("/order", curd.getOrder)
 	router.GET("/orderNumber", curd.getUserOrderNumber)
 	router.GET("/orders", curd.getUserOrdersByPage)
+	router.POST("/cancelOrder", curd.cancelOrder)
+	router.POST("/payOrder", curd.payOrder)
+	router.POST("/order", curd.newOrder)
 }
 
 func (o *OrderController) getOrder(c *gin.Context) {
 	status := 0
-	var order *entity.Order
+	var order *entity.DetailOrderWithProducts
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil || id < 1 {
 		status = 1
@@ -73,5 +76,42 @@ func (o *OrderController) getUserOrdersByPage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": orders,
+	})
+}
+
+func (o *OrderController) cancelOrder(c *gin.Context) {
+	var order *entity.Order
+	status := 0
+	if err := c.ShouldBindJSON(&order); err != nil {
+		status = 1
+	} else {
+		o.orderService.CancelOrder(order)
+	}
+	c.JSON(http.StatusOK, status)
+}
+
+func (o *OrderController) payOrder(c *gin.Context) {
+	var order *entity.Order
+	status := 0
+	if err := c.ShouldBindJSON(&order); err != nil {
+		status = 1
+	} else {
+		o.orderService.PayOrder(order)
+	}
+	c.JSON(http.StatusOK, status)
+}
+
+func (o *OrderController) newOrder(c *gin.Context) {
+	var orderProducts *entity.DetailOrderWithProducts
+	status := 0
+	var id int
+	if err := c.ShouldBindJSON(&orderProducts); err != nil {
+		status = 1
+	} else {
+		status, id = o.orderService.NewOrder(orderProducts)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": id,
 	})
 }

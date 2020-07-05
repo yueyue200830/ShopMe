@@ -174,6 +174,10 @@
           })
       },
       checkout() {
+        if (this.selectedProducts.length === 0) {
+          this.$message.error('您尚未选择结算商品！')
+          return
+        }
         this.$router.push({
           name: 'Checkout',
           params: {

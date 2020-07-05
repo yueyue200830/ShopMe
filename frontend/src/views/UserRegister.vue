@@ -12,6 +12,7 @@
           status-icon
           :rules="rules"
           ref="registerForm"
+          class="register-form"
           label-width="100px">
         <el-form-item label="用户名" prop="name">
           <el-input
