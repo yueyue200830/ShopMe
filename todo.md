@@ -2,21 +2,22 @@
 
 ## frontend
 
-- [ ] example of all products
-- [ ] main page
-- [ ] all products
-- [ ] product detail
-- [ ] shopping cart
-- [ ] check out
-- [ ] pay
-- [ ] orders
-- [ ] order detail
-- [ ] personal information
+- [x] example of all products
+- [x] main page
+- [x] all products
+- [x] product detail
+- [x] shopping cart
+- [x] check out
+- [x] pay
+- [x] orders
+- [x] order detail
+- [x] personal information
+- [ ] block visitor in some page
 - [ ] manager page
 
 ## backend
 
-- [ ] example of all products
+- [x] example of all products
 - [ ] session
 - [ ] extract config path
 - [ ] encrypt password

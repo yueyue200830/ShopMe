@@ -15,6 +15,7 @@ func InitServer() {
 	productDetailApiRegister(router)
 	cartApiRegister(router)
 	orderApiRegister(router)
+	managerApiRegister(router)
 	err := router.Run(":8000")
 	if err != nil {
 		fmt.Println("Start server failed!")

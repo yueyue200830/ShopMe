@@ -68,3 +68,9 @@ type User struct {
 	Email    string `json:"email"`
 	Avatar   string `json:"avatarPath" gorm:"default:NULL"`
 }
+
+type Manager struct {
+	ID       int    `json:"id" gorm:"AUTO_INCREMENT"`
+	Name     string `json:"userName"`
+	Password string `json:"password"`
+}
