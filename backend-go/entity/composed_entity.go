@@ -31,3 +31,10 @@ type DetailOrderWithProducts struct {
 	Order
 	Products []ProductOfOrder `json:"products"`
 }
+
+type BannerProduct struct {
+	Banner
+	Price float32 `json:"price"`
+	Image string  `json:"image"`
+	Title string  `json:"title"`
+}

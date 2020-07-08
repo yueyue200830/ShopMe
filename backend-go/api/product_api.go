@@ -20,6 +20,7 @@ func productApiRegister(router *gin.Engine) {
 	router.GET("/products", curd.getProductsByPage)
 	router.GET("/productNumber", curd.getProductNumber)
 	router.GET("/product/:id", curd.getProductInfo)
+	router.GET("/productNames", curd.getProductNames)
 }
 
 func (p *ProductController) getAllProducts(c *gin.Context) {
@@ -93,5 +94,17 @@ func (p *ProductController) getProductInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": product,
+	})
+}
+
+func (p *ProductController) getProductNames(c *gin.Context) {
+	names := p.productService.GetProductsNames()
+	status := 0
+	if names == nil || len(names) == 0 {
+		status = 1
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": names,
 	})
 }

@@ -26,3 +26,12 @@ func (m *ManagerService) Login(manager *entity.Manager) int {
 		return manager.ID
 	}
 }
+
+func (m *ManagerService) GetManagerInfo(id int) (name string, status int){
+	manager := m.managerRepository.GetManagerInfoByID(id)
+	status = 0
+	if name = manager.Name; name == "" {
+		status = 1
+	}
+	return name, status
+}

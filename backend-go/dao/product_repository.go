@@ -61,3 +61,8 @@ func (p *ProductRepository) GetProductByID(id int) entity.Product {
 	db.First(&product, id)
 	return product
 }
+
+func (p *ProductRepository) GetAllProductNames() (names []string) {
+	db.Table("products").Pluck("title", &names)
+	return names
+}

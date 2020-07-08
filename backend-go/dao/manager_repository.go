@@ -18,3 +18,9 @@ func GetManagerRepository() *ManagerRepository {
 func (m *ManagerRepository) GetManagerIDByNameAndPassword(manager *entity.Manager) error {
 	return db.Where(&manager).First(&manager).Error
 }
+
+func (m *ManagerRepository) GetManagerInfoByID(id int) *entity.Manager {
+	manager := &entity.Manager{}
+	db.First(&manager, id)
+	return manager
+}

@@ -59,3 +59,7 @@ func (p *ProductService) GetProductsByPage(page, pageSize, categoryID int) []ent
 func (p *ProductService) GetProductInfo(id int) entity.Product {
 	return p.productRepository.GetProductByID(id)
 }
+
+func (p *ProductService) GetProductsNames() []string {
+	return p.productRepository.GetAllProductNames()
+}

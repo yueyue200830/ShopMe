@@ -7,3 +7,18 @@ export function getBannerList(query) {
     params: query
   })
 }
+
+export function deleteBanner(query) {
+  return request({
+    url: '/banner',
+    method: 'delete',
+    params: query
+  })
+}
+
+export function getProductNameList() {
+  return request({
+    url: '/productNames',
+    method: 'get'
+  })
+}
