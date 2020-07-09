@@ -16,9 +16,17 @@ export function deleteBanner(query) {
   })
 }
 
-export function getProductNameList() {
+export function getProductList() {
   return request({
-    url: '/productNames',
+    url: '/allProducts',
     method: 'get'
+  })
+}
+
+export function updateBanner(data) {
+  return request({
+    url: '/banner',
+    method: 'post',
+    data
   })
 }

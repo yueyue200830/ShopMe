@@ -50,7 +50,7 @@
           .then(response => {
             let banners = response.data
             for (let i = 0; i < banners.length; i++) {
-              banners[i]['bannerPath'] = '/api/banner/' + banners[i]['bannerPath']
+              banners[i]['bannerPath'] = '/api/banner/image/' + banners[i]['bannerPath']
             }
             this.banners = banners
           })

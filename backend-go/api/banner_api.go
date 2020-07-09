@@ -15,9 +15,10 @@ type BannerController struct {
 func bannerApiRegister(router *gin.Engine) {
 	curd := BannerController{service.GetBannerService()}
 	router.GET("/mainBanners", curd.getMainBanners)
-	router.GET("/banner/:banner", curd.getBannerImage)
+	router.GET("/banner/image/:banner", curd.getBannerImage)
 	router.GET("/banners", curd.getBanners)
 	router.DELETE("/banner", curd.deleteBanner)
+	router.POST("/banner/image", curd.uploadBannerImage)
 }
 
 func (b *BannerController) getMainBanners(c *gin.Context) {
@@ -64,4 +65,28 @@ func (b *BannerController) deleteBanner(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, status)
+}
+
+func (b *BannerController) uploadBannerImage(c *gin.Context) {
+	file, _ := c.FormFile("file")
+	fileType := file.Header.Get("Content-Type")
+	status := 0
+	name := ""
+
+	name, status = b.bannerService.GenerateRandomImageName(fileType)
+	if status == 0 {
+		err := c.SaveUploadedFile(file, "../images/banners/" + name)
+		if err != nil {
+			status = 1
+		}
+	}
+
+	url := ""
+	if status == 0 {
+		url = "/banner/image/" + name
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"url": url,
+	})
 }
