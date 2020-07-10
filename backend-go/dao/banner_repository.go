@@ -35,3 +35,11 @@ func (b *BannerRepository) GetBannerNumber() (number int) {
 func (b *BannerRepository) DeleteBannerByID(id int) error {
 	return db.Where("id = ?", id).Delete(&entity.Banner{}).Error
 }
+
+func (b *BannerRepository) UpdateBanner(banner entity.Banner) error {
+	return db.Save(&banner).Error
+}
+
+func (b *BannerRepository) CreateBanner(banner entity.Banner) error {
+	return db.Create(&banner).Error
+}

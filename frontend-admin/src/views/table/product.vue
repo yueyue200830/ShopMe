@@ -50,17 +50,17 @@
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="广告图" width="200px" align="center">
+      <el-table-column label="库存" align="center" width="95">
         <template slot-scope="{row}">
-          <el-image
-            style="width: 170px;"
-            :src="row.bannerImage"
-            fit="contain"
-            :preview-src-list="row.bannerPreviewList"
-          />
+          <span>{{ row.stock }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品图片" width="110px" align="center">
+      <el-table-column label="产品类别" align="center" width="95">
+        <template slot-scope="{row}">
+          <span>{{ row.categoryID }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="图片" width="110px" align="center">
         <template slot-scope="{row}">
           <el-image
             style="width: 80px;"
@@ -68,6 +68,13 @@
             fit="contain"
             :preview-src-list="row.imagePreviewList"
           />
+        </template>
+      </el-table-column>
+      <el-table-column label="产品详情" align="center" width="110">
+        <template slot-scope="{row}">
+          <el-button size="mini" @click="handleDetailClick(row)">
+            查看
+          </el-button>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
@@ -159,10 +166,10 @@
 </template>
 
 <script>
-import { getBannerList, deleteBanner, getProductList, updateBanner, createBanner } from '@/api/banner'
+import { getProducts, getProductNumber } from '@/api/product'
 
 export default {
-  name: 'Banner',
+  name: 'product',
   data() {
     const validateBannerImage = (rule, value, callback) => {
       if (this.temp.bannerPath === '' || this.temp.bannerPath === null) {
@@ -214,11 +221,12 @@ export default {
   },
   created() {
     this.getList()
-    this.getProductList()
+    this.getProductNumber()
+    // this.getProductList()
   },
   methods: {
     handleImageUploadSuccess(response) {
-      const { code, url } = response
+      const {code, url} = response
       if (code !== 0) {
         this.$message.error('上传失败，请重试')
       } else {
@@ -229,13 +237,10 @@ export default {
     },
     getList() {
       this.listLoading = true
-      getBannerList(this.listQuery).then(response => {
-        this.total = response.data.total
-        const list = response.data.items
+      getProducts(this.listQuery).then(response => {
+        const list = response.data
         for (let i = 0; i < list.length; ++i) {
-          list[i].bannerImage = process.env.VUE_APP_BASE_API + list[i].bannerPath
-          list[i].bannerPreviewList = [list[i].bannerImage]
-          list[i].imageUrl = process.env.VUE_APP_BASE_API + list[i].image
+          list[i].imageUrl = process.env.VUE_APP_BASE_API + '/productImage/' + list[i].image
           list[i].imagePreviewList = [list[i].imageUrl]
         }
         this.list = list
@@ -249,15 +254,20 @@ export default {
       // this.getList()
     },
     getProductList() {
-      getProductList().then(response => {
-        // this.productOptions = response
-        const list = response
-        const products = {}
-        for (let i = 0; i < list.length; ++i) {
-          const p = list[i]
-          products[p.id] = p
-        }
-        this.productOptions = products
+      // getProductList().then(response => {
+      //   // this.productOptions = response
+      //   const list = response
+      //   const products = {}
+      //   for (let i = 0; i < list.length; ++i) {
+      //     const p = list[i]
+      //     products[p.id] = p
+      //   }
+      //   this.productOptions = products
+      // })
+    },
+    getProductNumber() {
+      getProductNumber().then(response => {
+        this.total = response
       })
     },
     handleTitleChange(val) {
@@ -289,14 +299,14 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createBanner(this.temp).then(response => {
-            if (response !== 0) {
-              this.$message.error('创建失败，请重试')
-            } else {
-              this.dialogFormVisible = false
-              this.getList()
-            }
-          })
+          // createBanner(this.temp).then(response => {
+          //   if (response !== 0) {
+          //     this.$message.error('创建失败，请重试')
+          //   } else {
+          //     this.dialogFormVisible = false
+          //     this.getList()
+          //   }
+          // })
         }
       })
     },
@@ -312,27 +322,27 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          updateBanner(this.temp).then(response => {
-            if (response !== 0) {
-              this.$message.error('更新失败，请重试')
-            } else {
-              this.dialogFormVisible = false
-              this.getList()
-            }
-          })
+          // updateBanner(this.temp).then(response => {
+          //   if (response !== 0) {
+          //     this.$message.error('更新失败，请重试')
+          //   } else {
+          //     this.dialogFormVisible = false
+          //     this.getList()
+          //   }
+          // })
         }
       })
     },
     handleDelete(row) {
-      const deleteQuery = { id: row.id }
-      deleteBanner(deleteQuery).then(response => {
-        if (response === 0) {
-          this.$message.success('删除成功')
-        } else {
-          this.$message.error('删除失败，请重试')
-        }
-        this.getList()
-      })
+      const deleteQuery = {id: row.id}
+      // deleteBanner(deleteQuery).then(response => {
+      //   if (response === 0) {
+      //     this.$message.success('删除成功')
+      //   } else {
+      //     this.$message.error('删除失败，请重试')
+      //   }
+      //   this.getList()
+      // })
     },
     handleSizeChange(newSize) {
       this.listQuery.size = newSize
@@ -342,6 +352,9 @@ export default {
       this.listQuery.page = newPage
       this.getList()
     },
+    handleDetailClick(row) {
+
+    }
   }
 }
 </script>

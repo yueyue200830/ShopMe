@@ -18,6 +18,8 @@ func bannerApiRegister(router *gin.Engine) {
 	router.GET("/banner/image/:banner", curd.getBannerImage)
 	router.GET("/banners", curd.getBanners)
 	router.DELETE("/banner", curd.deleteBanner)
+	router.PUT("/banner", curd.updateBanner)
+	router.POST("/banner", curd.createBanner)
 	router.POST("/banner/image", curd.uploadBannerImage)
 }
 
@@ -89,4 +91,26 @@ func (b *BannerController) uploadBannerImage(c *gin.Context) {
 		"code": status,
 		"url": url,
 	})
+}
+
+func (b *BannerController) updateBanner(c *gin.Context) {
+	status := 0
+	var banner *entity.BannerProduct
+	if err := c.ShouldBindJSON(&banner); err != nil {
+		status = 1
+	} else {
+		status = b.bannerService.UpdateBanner(banner)
+	}
+	c.JSON(http.StatusOK, status)
+}
+
+func (b *BannerController) createBanner(c *gin.Context) {
+	status := 0
+	var banner *entity.BannerProduct
+	if err := c.ShouldBindJSON(&banner); err != nil {
+		status = 1
+	} else {
+		status = b.bannerService.CreateBanner(banner)
+	}
+	c.JSON(http.StatusOK, status)
 }

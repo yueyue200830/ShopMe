@@ -26,6 +26,14 @@ export function getProductList() {
 export function updateBanner(data) {
   return request({
     url: '/banner',
+    method: 'put',
+    data
+  })
+}
+
+export function createBanner(data) {
+  return request({
+    url: '/banner',
     method: 'post',
     data
   })

@@ -60,3 +60,29 @@ func (b *BannerService) GenerateRandomImageName(fileType string) (name string, s
 
 	return name, status
 }
+
+func (b *BannerService) UpdateBanner(bannerProduct *entity.BannerProduct) (status int) {
+	banner := bannerProduct.Banner
+	// get banner name
+	name := strings.Split(banner.Banner, "/")
+	banner.Banner = name[len(name) - 1]
+
+	err := b.bannerRepository.UpdateBanner(banner)
+	if err != nil {
+		return 1
+	}
+	return 0
+}
+
+func (b *BannerService) CreateBanner(bannerProduct *entity.BannerProduct) (status int) {
+	banner := bannerProduct.Banner
+	// get banner name
+	name := strings.Split(banner.Banner, "/")
+	banner.Banner = name[len(name) - 1]
+
+	err := b.bannerRepository.CreateBanner(banner)
+	if err != nil {
+		return 1
+	}
+	return 0
+}
