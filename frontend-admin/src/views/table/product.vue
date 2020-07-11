@@ -40,12 +40,12 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品名称" min-width="150px">
+      <el-table-column label="商品名称" min-width="150px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="售价" align="center" width="95">
+      <el-table-column label="价格" align="center" width="95">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
@@ -55,9 +55,9 @@
           <span>{{ row.stock }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品类别" align="center" width="95">
+      <el-table-column label="商品类别" align="center" width="95">
         <template slot-scope="{row}">
-          <span>{{ row.categoryID }}</span>
+          <span>{{ row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column label="图片" width="110px" align="center">
@@ -70,7 +70,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="产品详情" align="center" width="110">
+      <el-table-column label="商品详情" align="center" width="110">
         <template slot-scope="{row}">
           <el-button size="mini" @click="handleDetailClick(row)">
             查看
@@ -117,6 +117,15 @@
         <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">
           <el-input v-model="temp.id" disabled />
         </el-form-item>
+        <el-form-item label="商品名称" prop="title">
+          <el-input v-model="temp.title"/>
+        </el-form-item>
+        <el-form-item label="价格" prop="price">
+          <el-input v-model="temp.price"/>
+        </el-form-item>
+        <el-form-item label="库存" prop="stock">
+          <el-input v-model="temp.stock"/>
+        </el-form-item>
         <el-form-item label="图片" prop="bannerPath">
           <el-upload
             :action="bannerUploadURL"
@@ -134,23 +143,20 @@
             fit="contain"
           />
         </el-form-item>
-        <el-form-item label="商品名称" prop="productID">
+        <el-form-item label="商品类别" prop="categoryID">
           <el-select
-            v-model="temp.productID"
+            v-model="temp.categoryID"
             style="width: 280px;"
-            placeholder="请选择对应产品名称"
-            @change="handleTitleChange"
+            placeholder="请选择对应商品类别"
+            @change="handleCategoryChange"
           >
             <el-option
-              v-for="item in productOptions"
+              v-for="item in categoryMap"
               :key="item.id"
-              :label="item.title"
+              :label="item.name"
               :value="item.id"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item label="单价" prop="price">
-          <el-input v-model="temp.price" disabled />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -166,7 +172,7 @@
 </template>
 
 <script>
-import { getProducts, getProductNumber } from '@/api/product'
+import * as productAPI from '@/api/product'
 
 export default {
   name: 'product',
@@ -196,15 +202,17 @@ export default {
         page: 1,
         size: 10,
       },
-      productOptions: [],
+      categoryMap: {},
+      categoryOptions: [],
       temp: {
         id: undefined,
         title: '',
         productID: undefined,
-        bannerPath: '',
-        bannerImage: '',
         image: '',
         price: undefined,
+        stock: undefined,
+        category: '',
+        categoryID: undefined,
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -220,9 +228,9 @@ export default {
     }
   },
   created() {
+    this.getCategoryMap()
     this.getList()
     this.getProductNumber()
-    // this.getProductList()
   },
   methods: {
     handleImageUploadSuccess(response) {
@@ -237,11 +245,12 @@ export default {
     },
     getList() {
       this.listLoading = true
-      getProducts(this.listQuery).then(response => {
+      productAPI.getProducts(this.listQuery).then(response => {
         const list = response.data
         for (let i = 0; i < list.length; ++i) {
           list[i].imageUrl = process.env.VUE_APP_BASE_API + '/productImage/' + list[i].image
           list[i].imagePreviewList = [list[i].imageUrl]
+          list[i].category = this.categoryMap[list[i].categoryID].name
         }
         this.list = list
       }).finally(() => {
@@ -253,39 +262,38 @@ export default {
       // this.currentPage = 1
       // this.getList()
     },
-    getProductList() {
-      // getProductList().then(response => {
-      //   // this.productOptions = response
-      //   const list = response
-      //   const products = {}
-      //   for (let i = 0; i < list.length; ++i) {
-      //     const p = list[i]
-      //     products[p.id] = p
-      //   }
-      //   this.productOptions = products
-      // })
+    getCategoryMap() {
+      productAPI.getCategory().then(response => {
+        const categories = response
+        const categoryMap = {}
+        categories.forEach(category => {
+          categoryMap[category.id] = category
+        })
+        this.categoryMap = categoryMap
+      })
     },
     getProductNumber() {
-      getProductNumber().then(response => {
+      productAPI.getProductNumber().then(response => {
         this.total = response
       })
     },
-    handleTitleChange(val) {
-      const product = this.productOptions[val]
-      this.temp.productID = val
-      this.temp.image = product.image
-      this.temp.price = product.price
-      this.temp.title = product.title
+    handleCategoryChange(val) {
+      // const product = this.categoryOptions[val]
+      // this.temp.productID = val
+      // this.temp.image = product.image
+      // this.temp.price = product.price
+      // this.temp.title = product.title
     },
     resetTemp() {
       this.temp = {
         id: undefined,
         title: '',
         productID: undefined,
-        bannerPath: '',
-        bannerImage: '',
         image: '',
         price: undefined,
+        stock: undefined,
+        category: '',
+        categoryID: undefined,
       }
     },
     handleCreate() {

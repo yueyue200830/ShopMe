@@ -14,3 +14,10 @@ export function getProductNumber() {
     method: 'get',
   })
 }
+
+export function getCategory() {
+  return request({
+    url: '/categories',
+    method: 'get',
+  })
+}

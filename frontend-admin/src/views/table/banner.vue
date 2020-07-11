@@ -40,7 +40,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品名称" min-width="150px">
+      <el-table-column label="商品名称" min-width="150px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.title }}</span>
         </template>
@@ -60,7 +60,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="产品图片" width="110px" align="center">
+      <el-table-column label="商品图片" width="110px" align="center">
         <template slot-scope="{row}">
           <el-image
             style="width: 80px;"
@@ -131,7 +131,7 @@
           <el-select
             v-model="temp.productID"
             style="width: 280px;"
-            placeholder="请选择对应产品名称"
+            placeholder="请选择对应商品名称"
             @change="handleTitleChange"
           >
             <el-option
@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import { getBannerList, deleteBanner, getProductList, updateBanner, createBanner } from '@/api/banner'
+import * as bannerAPI from '@/api/banner'
 
 export default {
   name: 'Banner',
@@ -173,7 +173,7 @@ export default {
     }
     const validateProductID = (rule, value, callback) => {
       if (this.temp.productID === undefined) {
-        callback(new Error('请选择对应产品'))
+        callback(new Error('请选择对应商品'))
       } else {
         callback()
       }
@@ -229,7 +229,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      getBannerList(this.listQuery).then(response => {
+      bannerAPI.getBannerList(this.listQuery).then(response => {
         this.total = response.data.total
         const list = response.data.items
         for (let i = 0; i < list.length; ++i) {
@@ -249,8 +249,7 @@ export default {
       // this.getList()
     },
     getProductList() {
-      getProductList().then(response => {
-        // this.productOptions = response
+      bannerAPI.getProductList().then(response => {
         const list = response
         const products = {}
         for (let i = 0; i < list.length; ++i) {
@@ -277,6 +276,7 @@ export default {
         image: '',
         price: undefined,
       }
+      this.bannerUploadImageURL = ''
     },
     handleCreate() {
       this.resetTemp()
@@ -289,7 +289,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createBanner(this.temp).then(response => {
+          bannerAPI.createBanner(this.temp).then(response => {
             if (response !== 0) {
               this.$message.error('创建失败，请重试')
             } else {
@@ -312,7 +312,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          updateBanner(this.temp).then(response => {
+          bannerAPI.updateBanner(this.temp).then(response => {
             if (response !== 0) {
               this.$message.error('更新失败，请重试')
             } else {
@@ -325,7 +325,7 @@ export default {
     },
     handleDelete(row) {
       const deleteQuery = { id: row.id }
-      deleteBanner(deleteQuery).then(response => {
+      bannerAPI.deleteBanner(deleteQuery).then(response => {
         if (response === 0) {
           this.$message.success('删除成功')
         } else {
