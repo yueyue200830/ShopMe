@@ -3,6 +3,8 @@ package service
 import (
 	"backend-go/dao"
 	"backend-go/entity"
+	"backend-go/utils"
+	"strings"
 )
 
 var productService *ProductService
@@ -62,4 +64,50 @@ func (p *ProductService) GetProductInfo(id int) entity.Product {
 
 func (p *ProductService) GetProductsNames() []string {
 	return p.productRepository.GetAllProductNames()
+}
+
+func (p *ProductService) AddProduct(product *entity.Product) int {
+	image := strings.Split(product.Image, "/")
+	product.Image = image[len(image) - 1]
+
+	err := p.productRepository.AddProduct(product)
+	if err != nil {
+		return 1
+	}
+	return 0
+}
+
+func (p *ProductService) UpdateProduct(product *entity.Product) int {
+	image := strings.Split(product.Image, "/")
+	product.Image = image[len(image) - 1]
+
+	err := p.productRepository.UpdateProduct(product)
+	if err != nil {
+		return 1
+	}
+	return 0
+}
+
+func (p *ProductService) DeleteProduct(id int) int {
+	// todo: delete product image & product detail as well
+	// todo: consider those product in the order
+	err := p.productRepository.DeleteProduct(id)
+	if err != nil {
+		return 1
+	}
+	return 0
+}
+
+func (p *ProductService) GenerateRandomImageName(fileType string) (name string, status int) {
+	status = 0
+	s := strings.Split(fileType, "/")
+
+	if len(s) != 2 || s[0] != "image" {
+		status = 1
+	} else {
+		name = utils.GenerateRandomString(30)
+		name = name + "." + s[1]
+	}
+
+	return name, status
 }

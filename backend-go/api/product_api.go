@@ -17,9 +17,13 @@ func productApiRegister(router *gin.Engine) {
 	router.GET("/allProducts", curd.getAllProducts)
 	router.GET("/promoteProducts", curd.getPromoteProducts)
 	router.GET("/productImage/:image", curd.getProductImage)
+	router.POST("/productImage", curd.uploadProductImage)
 	router.GET("/products", curd.getProductsByPage)
 	router.GET("/productNumber", curd.getProductNumber)
 	router.GET("/product/:id", curd.getProductInfo)
+	router.POST("/product", curd.addProduct)
+	router.PUT("/product", curd.updateProduct)
+	router.DELETE("/product", curd.deleteProduct)
 	router.GET("/productNames", curd.getProductNames)
 }
 
@@ -106,5 +110,63 @@ func (p *ProductController) getProductNames(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": names,
+	})
+}
+
+func (p *ProductController) addProduct(c *gin.Context) {
+	status := 0
+	var product *entity.Product
+	if err := c.ShouldBindJSON(&product); err != nil {
+		status = 1
+	} else {
+		status = p.productService.AddProduct(product)
+	}
+	c.JSON(http.StatusOK, status)
+}
+
+func (p *ProductController) updateProduct(c *gin.Context) {
+	status := 0
+	var product *entity.Product
+	if err := c.ShouldBindJSON(&product); err != nil {
+		status = 1
+	} else {
+		status = p.productService.UpdateProduct(product)
+	}
+	c.JSON(http.StatusOK, status)
+}
+
+func (p *ProductController) deleteProduct(c *gin.Context) {
+	status := 0
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		status = 1
+	} else {
+		status = p.productService.DeleteProduct(id)
+	}
+
+	c.JSON(http.StatusOK, status)
+}
+
+func (p *ProductController) uploadProductImage(c *gin.Context) {
+	file, _ := c.FormFile("file")
+	fileType := file.Header.Get("Content-Type")
+	status := 0
+	name := ""
+
+	name, status = p.productService.GenerateRandomImageName(fileType)
+	if status == 0 {
+		err := c.SaveUploadedFile(file, "../images/products/" + name)
+		if err != nil {
+			status = 1
+		}
+	}
+
+	url := ""
+	if status == 0 {
+		url = "/productImage/" + name
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"url": url,
 	})
 }

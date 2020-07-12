@@ -28,6 +28,7 @@
     </div>
 
     <el-table
+      ref="productTable"
       v-loading="listLoading"
       :data="list"
       border
@@ -82,7 +83,7 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button size="mini" type="danger" @click="deleteProduct(row,$index)">
             删除
           </el-button>
         </template>
@@ -98,7 +99,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        @current-change="handlePageChange"
       />
     </div>
 
@@ -121,14 +122,14 @@
           <el-input v-model="temp.title"/>
         </el-form-item>
         <el-form-item label="价格" prop="price">
-          <el-input v-model="temp.price"/>
+          <el-input-number v-model="temp.price" :precision="2" :step="1" :min="0.01"/>
         </el-form-item>
         <el-form-item label="库存" prop="stock">
-          <el-input v-model="temp.stock"/>
+          <el-input-number v-model="temp.stock" :min="0"/>
         </el-form-item>
-        <el-form-item label="图片" prop="bannerPath">
+        <el-form-item label="图片" prop="imageUrl">
           <el-upload
-            :action="bannerUploadURL"
+            :action="imageUploadURL"
             :on-success="handleImageUploadSuccess"
             :file-list="fileList"
             :show-file-list="false"
@@ -137,9 +138,9 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
           <el-image
-            v-if="bannerUploadImageURL !== ''"
+            v-if="temp.imageUrl !== ''"
             style="width: 250px;"
-            :src="bannerUploadImageURL"
+            :src="temp.imageUrl"
             fit="contain"
           />
         </el-form-item>
@@ -148,7 +149,6 @@
             v-model="temp.categoryID"
             style="width: 280px;"
             placeholder="请选择对应商品类别"
-            @change="handleCategoryChange"
           >
             <el-option
               v-for="item in categoryMap"
@@ -168,81 +168,157 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="商品详情" :visible.sync="dialogTableVisible">
+      <div class="detail-info">
+        <div>
+          商品ID： {{ productInfo.id }}
+        </div>
+        <div>
+          商品名称： {{ productInfo.title }}
+        </div>
+        <el-upload
+          :action="detailUploadURL"
+          :on-success="handleDetailUploadSuccess"
+          :file-list="fileList"
+          :show-file-list="false"
+          list-type="picture"
+          class="detail-upload-button"
+        >
+          <el-button size="medium" plain type="primary">
+            添加详情图片
+          </el-button>
+        </el-upload>
+      </div>
+      <el-table
+        ref="dragTable"
+        v-loading="detailLoading"
+        :data="productDetails"
+        row-key="order"
+        border
+      >
+        <el-table-column align="center" label="顺序" width="65">
+          <template slot-scope="{row}">
+            <span>{{ row.order }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column min-width="300px" label="图片">
+          <template slot-scope="{row}">
+            <span>{{ row.title }}</span>
+            <el-image
+              style="height: 100px;"
+              :src="row.detailUrl"
+              fit="contain"
+              :preview-src-list="row.previewList"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="拖拽" width="80">
+          <template slot-scope="{}">
+            <svg-icon class="drag-handler" icon-class="drag" />
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="删除" width="80">
+          <template slot-scope="{row}">
+            <i class="el-icon-close" @click="handleDetailDelete(row)"/>
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer">
+        <el-button @click="handleDetailInvisible">取 消</el-button>
+        <el-button type="primary" @click="handleDetailOrderChange">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as productAPI from '@/api/product'
+import Sortable from 'sortablejs'
 
 export default {
   name: 'product',
   data() {
-    const validateBannerImage = (rule, value, callback) => {
-      if (this.temp.bannerPath === '' || this.temp.bannerPath === null) {
-        callback(new Error('请上传广告图'))
+    const validateImageUrl = (rule, value, callback) => {
+      if (this.temp.image === '' || this.temp.imageUrl === '') {
+        callback(new Error('请上传商品图'))
       } else {
         callback()
       }
     }
-    const validateProductID = (rule, value, callback) => {
-      if (this.temp.productID === undefined) {
-        callback(new Error('请选择对应产品'))
+    const validateCategoryID = (rule, value, callback) => {
+      if (this.temp.categoryID === undefined) {
+        callback(new Error('请选择对应类别'))
+      } else {
+        callback()
+      }
+    }
+    const validateProductTitle = (rule, value, callback) => {
+      if (this.temp.title === '') {
+        callback(new Error('请输入商品名称'))
       } else {
         callback()
       }
     }
     return {
-      bannerUploadURL: `${process.env.VUE_APP_BASE_API}/banner/image`,
-      bannerUploadImageURL: '',
+      imageUploadURL: `${process.env.VUE_APP_BASE_API}/productImage`,
+      detailUploadURL: `${process.env.VUE_APP_BASE_API}/productDetail/image`,
       list: null,
       total: 0,
       listLoading: true,
+      detailLoading: false,
       pageSizes: [10, 20, 50],
       listQuery: {
         page: 1,
         size: 10,
       },
       categoryMap: {},
-      categoryOptions: [],
       temp: {
         id: undefined,
         title: '',
         productID: undefined,
         image: '',
+        imageUrl: '',
         price: undefined,
-        stock: undefined,
+        stock: 0,
         category: '',
         categoryID: undefined,
       },
       dialogFormVisible: false,
+      dialogTableVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
         create: '创建'
       },
       rules: {
-        bannerPath: [{ validator: validateBannerImage }],
-        productID: [{ validator: validateProductID }]
+        title: [{ validator: validateProductTitle }],
+        imageUrl: [{ validator: validateImageUrl }],
+        categoryID: [{ validator: validateCategoryID }]
       },
-      fileList: []
+      fileList: [],
+      productDetails: [{
+        productID: undefined,
+        order: 1,
+        title: 'test',
+        detailPath: '',
+        detailUrl: '',
+      }],
+      sortable: null,
+      productInfo: {
+        id: undefined,
+        title: ''
+      }
     }
   },
-  created() {
-    this.getCategoryMap()
+  async created() {
+    // todo: sync map and list, map should get before list.
+    await this.getCategoryMap()
     this.getList()
     this.getProductNumber()
   },
   methods: {
-    handleImageUploadSuccess(response) {
-      const {code, url} = response
-      if (code !== 0) {
-        this.$message.error('上传失败，请重试')
-      } else {
-        this.bannerUploadImageURL = process.env.VUE_APP_BASE_API + url
-        this.temp.bannerImage = process.env.VUE_APP_BASE_API + url
-        this.temp.bannerPath = url
-      }
-    },
     getList() {
       this.listLoading = true
       productAPI.getProducts(this.listQuery).then(response => {
@@ -257,13 +333,8 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter() {
-      // todo: handle filter
-      // this.currentPage = 1
-      // this.getList()
-    },
-    getCategoryMap() {
-      productAPI.getCategory().then(response => {
+    async getCategoryMap() {
+      await productAPI.getCategory().then(response => {
         const categories = response
         const categoryMap = {}
         categories.forEach(category => {
@@ -277,21 +348,15 @@ export default {
         this.total = response
       })
     },
-    handleCategoryChange(val) {
-      // const product = this.categoryOptions[val]
-      // this.temp.productID = val
-      // this.temp.image = product.image
-      // this.temp.price = product.price
-      // this.temp.title = product.title
-    },
     resetTemp() {
       this.temp = {
         id: undefined,
         title: '',
         productID: undefined,
         image: '',
-        price: undefined,
-        stock: undefined,
+        imageUrl: '',
+        price: 0.01,
+        stock: 0,
         category: '',
         categoryID: undefined,
       }
@@ -307,20 +372,19 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          // createBanner(this.temp).then(response => {
-          //   if (response !== 0) {
-          //     this.$message.error('创建失败，请重试')
-          //   } else {
-          //     this.dialogFormVisible = false
-          //     this.getList()
-          //   }
-          // })
+          productAPI.createProduct(this.temp).then(response => {
+            if (response !== 0) {
+              this.$message.error('创建失败，请重试')
+            } else {
+              this.dialogFormVisible = false
+              this.getList()
+            }
+          })
         }
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
-      this.bannerUploadImageURL = this.temp.bannerImage
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -330,42 +394,171 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          // updateBanner(this.temp).then(response => {
-          //   if (response !== 0) {
-          //     this.$message.error('更新失败，请重试')
-          //   } else {
-          //     this.dialogFormVisible = false
-          //     this.getList()
-          //   }
-          // })
+          productAPI.updateProduct(this.temp).then(response => {
+            if (response !== 0) {
+              this.$message.error('更新失败，请重试')
+            } else {
+              this.dialogFormVisible = false
+              this.getList()
+            }
+          })
         }
       })
     },
-    handleDelete(row) {
+    deleteProduct(row) {
       const deleteQuery = {id: row.id}
-      // deleteBanner(deleteQuery).then(response => {
-      //   if (response === 0) {
-      //     this.$message.success('删除成功')
-      //   } else {
-      //     this.$message.error('删除失败，请重试')
-      //   }
-      //   this.getList()
-      // })
+      productAPI.deleteProduct(deleteQuery).then(response => {
+        if (response === 0) {
+          this.$message.success('删除成功')
+        } else {
+          this.$message.error('删除失败，请重试')
+        }
+        this.getList()
+      })
+    },
+    handleImageUploadSuccess(response) {
+      const {code, url} = response
+      if (code !== 0) {
+        this.$message.error('上传失败，请重试')
+      } else {
+        this.temp.image = url
+        this.temp.imageUrl = process.env.VUE_APP_BASE_API + url
+      }
     },
     handleSizeChange(newSize) {
       this.listQuery.size = newSize
       this.getList()
     },
-    handleCurrentChange(newPage) {
+    handlePageChange(newPage) {
       this.listQuery.page = newPage
       this.getList()
     },
     handleDetailClick(row) {
-
+      this.dialogTableVisible = true
+      this.productInfo.id = row.id
+      this.productInfo.title = row.title
+      this.detailLoading = true
+      this.getProductDetails()
+      this.$nextTick(() => {
+        this.setSort()
+      })
+    },
+    handleDetailInvisible() {
+      this.dialogTableVisible = false
+      this.productDetails= [{
+        productID: undefined,
+        order: 1,
+        title: 'test',
+        detailPath: '',
+        detailUrl: '',
+      }]
+    },
+    handleDetailUploadSuccess(response) {
+      const {code, url} = response
+      if (code !== 0) {
+        this.$message.error('上传失败，请重试')
+      } else {
+        this.detailLoading = true
+        const l = this.productDetails.length
+        this.productDetails.push({
+          productID: this.productInfo.id,
+          order: l + 1,
+          detailPath: url,
+          detailUrl: `${process.env.VUE_APP_BASE_API}/productDetail/${url}`,
+        })
+        productAPI.updateProductDetails(this.productDetails).then(response => {
+          if (response !== 0) {
+            this.$message.error("上传失败，请重试")
+          }
+        }).finally(() => {
+          this.getProductDetails()
+        })
+      }
+    },
+    handleDetailOrderChange() {
+      console.log(this.productDetails)
+      if (this.productDetails.length === 0) {
+        this.$message.error("请至少上传一张详情图片")
+        return
+      }
+      productAPI.updateProductDetails(this.productDetails).then(response => {
+        if (response === 0) {
+          this.dialogTableVisible = false;
+          this.handleDetailInvisible()
+        }
+      })
+    },
+    handleDetailDelete(row) {
+      if (this.productDetails.length === 1) {
+        this.$message.error("删除失败，请确保至少有一张详情图片")
+        return
+      }
+      let i
+      for (let j = 0; j < this.productDetails.length; ++j) {
+        if (this.productDetails[j] === row) {
+          i = j
+          break
+        }
+      }
+      this.productDetails.splice(i, 1)
+      console.log(this.productDetails)
+      productAPI.updateProductDetails(this.productDetails).then(response => {
+        if (response !== 0) {
+          this.$message.error("删除失败，请重试")
+        }
+      }).finally(() => {
+        this.detailLoading = true
+        this.getProductDetails()
+      })
+    },
+    handleFilter() {
+      // todo: handle filter
+      // this.currentPage = 1
+      // this.getList()
+    },
+    getProductDetails() {
+      productAPI.getProductDetails({id: this.productInfo.id}).then(response => {
+        const { code, data } = response
+        if (code !== 0) {
+          this.$message.error('产品详情加载失败')
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            data[i]['detailUrl'] = `${process.env.VUE_APP_BASE_API}/productDetail/${data[i]['detailPath']}`
+            data[i]['previewList'] = [data[i]['detailUrl']]
+          }
+          this.productDetails = data
+        }
+      }).finally(() => {
+        this.detailLoading = false
+      })
+    },
+    setSort() {
+      const el = this.$refs['dragTable'].$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
+      this.sortable = Sortable.create(el, {
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        onEnd: evt => {
+          const targetRow = this.productDetails.splice(evt.oldIndex, 1)[0]
+          this.productDetails.splice(evt.newIndex, 0, targetRow)
+        },
+        animation: 300
+      })
     }
   }
 }
 </script>
+
+<style>
+  .sortable-ghost{
+    background: #409EFF !important;
+  }
+
+  .sortable-drag {
+    opacity: 0;
+    color: white;
+  }
+
+</style>
 
 <style scoped>
   .filter-container {
@@ -384,5 +577,25 @@ export default {
   .page {
     padding: 10px;
     margin-left: auto;
+  }
+
+  .drag-handler{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .detail-upload-button {
+    margin: 10px 0;
+  }
+
+  .detail-info {
+    padding: 10px;
+    line-height: 2em;
+  }
+
+  .el-icon-close:hover {
+    color: #409EFF !important;
+    cursor: pointer !important;
   }
 </style>

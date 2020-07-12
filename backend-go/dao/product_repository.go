@@ -66,3 +66,15 @@ func (p *ProductRepository) GetAllProductNames() (names []string) {
 	db.Table("products").Pluck("title", &names)
 	return names
 }
+
+func (p *ProductRepository) AddProduct(product *entity.Product) error {
+	return db.Create(&product).Error
+}
+
+func (p *ProductRepository) UpdateProduct(product *entity.Product) error {
+	return db.Save(&product).Error
+}
+
+func (p *ProductRepository) DeleteProduct(id int) error {
+	return db.Where("id = ?", id).Delete(&entity.Product{}).Error
+}
