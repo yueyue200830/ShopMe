@@ -20,3 +20,15 @@ func (c *CategoryRepository) GetAllCategories() []entity.Category {
 	db.Find(&categories)
 	return categories
 }
+
+func (c *CategoryRepository) DeleteCategoryByID(id int) error {
+	return db.Where("id = ?", id).Delete(&entity.Category{}).Error
+}
+
+func (c *CategoryRepository) UpdateCategory(category *entity.Category) error {
+	return db.Save(&category).Error
+}
+
+func (c *CategoryRepository) CreateCategory(category *entity.Category) error {
+	return db.Create(&category).Error
+}
