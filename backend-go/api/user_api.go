@@ -14,9 +14,10 @@ type UserController struct {
 
 func userApiRegister(router *gin.Engine) {
 	curd := UserController{service.GetUserService()}
-	router.GET("/getAll", curd.getAll)
-	router.GET("/getUsers", curd.getAllUsers)
-	router.GET("/getUserNames", curd.getAllNames)
+	//router.GET("/getAll", curd.getAll)
+	//router.GET("/getUsers", curd.getAllUsers)
+	//router.GET("/getUserNames", curd.getAllNames)
+	router.GET("/users", curd.getUsers)
 	router.POST("/userLogin", curd.userLogin)
 	router.GET("/checkUserNameExist", curd.checkUserNameExist)
 	router.GET("/checkUserEmailExist", curd.checkUserEmailExist)
@@ -148,4 +149,29 @@ func (u *UserController) updateUserInfo(c *gin.Context) {
 		status = u.userService.UpdateUserInfo(user)
 	}
 	c.JSON(http.StatusOK, status)
+}
+
+func (u *UserController) getUsers(c *gin.Context) {
+	status := 0
+	num := 0
+	var users []entity.User
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page < 1 {
+		status = 1
+	}
+	pageSize, err := strconv.Atoi(c.Query("size"))
+	if err != nil || pageSize < 1 {
+		status = 1
+	}
+	if status == 0 {
+		users, num, status = u.userService.GetUsers(page, pageSize)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": gin.H{
+			"num": num,
+			"list": users,
+		},
+	})
 }

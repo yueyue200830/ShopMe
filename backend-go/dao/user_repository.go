@@ -37,6 +37,18 @@ func (u *UserRepository) GetAllUsers() []entity.User {
 	return users
 }
 
+func (u *UserRepository) GetUsersByPage(page, size int) (users []entity.User, err error) {
+	offsetNum := (page - 1) * size
+	dbUsers := db.Table("users").Order("id desc").Offset(offsetNum).Limit(size)
+	err = dbUsers.Select("id, name, email, avatar").Scan(&users).Error
+	return users, err
+}
+
+func (u *UserRepository) GetUserNumber() (number int) {
+	db.Table("users").Count(&number)
+	return number
+}
+
 func (u *UserRepository) GetUserIDByNameAndPassword(user entity.User) int {
 	db.Where(&user).First(&user)
 	return user.ID

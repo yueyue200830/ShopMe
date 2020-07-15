@@ -74,3 +74,8 @@ type Manager struct {
 	Name     string `json:"userName"`
 	Password string `json:"password"`
 }
+
+type CategoryWithNum struct {
+	Category
+	Num int `json:"num"`
+}

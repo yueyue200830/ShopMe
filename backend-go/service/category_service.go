@@ -23,6 +23,16 @@ func (c *CategoryService) GetAllCategories() []entity.Category {
 	return c.categoryService.GetAllCategories()
 }
 
+func (c *CategoryService) GetCategories(page, size int) ([]entity.CategoryWithNum, int, int) {
+	status := 0
+	categories, err := c.categoryService.GetCategoriesByPage(page, size)
+	if err != nil {
+		status = 1
+	}
+	num := c.categoryService.GetCategoryNumber()
+	return categories, num, status
+}
+
 func (c *CategoryService) DeleteCategory(id int) (status int) {
 	err := c.categoryService.DeleteCategoryByID(id)
 	if err != nil {

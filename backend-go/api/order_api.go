@@ -20,6 +20,7 @@ func orderApiRegister(router *gin.Engine) {
 	router.POST("/cancelOrder", curd.cancelOrder)
 	router.POST("/payOrder", curd.payOrder)
 	router.POST("/order", curd.newOrder)
+	router.POST("/order/finish", curd.finishOrder)
 }
 
 func (o *OrderController) getOrder(c *gin.Context) {
@@ -85,7 +86,7 @@ func (o *OrderController) cancelOrder(c *gin.Context) {
 	if err := c.ShouldBindJSON(&order); err != nil {
 		status = 1
 	} else {
-		o.orderService.CancelOrder(order)
+		status = o.orderService.CancelOrder(order)
 	}
 	c.JSON(http.StatusOK, status)
 }
@@ -96,7 +97,7 @@ func (o *OrderController) payOrder(c *gin.Context) {
 	if err := c.ShouldBindJSON(&order); err != nil {
 		status = 1
 	} else {
-		o.orderService.PayOrder(order)
+		status = o.orderService.PayOrder(order)
 	}
 	c.JSON(http.StatusOK, status)
 }
@@ -114,4 +115,15 @@ func (o *OrderController) newOrder(c *gin.Context) {
 		"code": status,
 		"data": id,
 	})
+}
+
+func (o *OrderController) finishOrder(c *gin.Context) {
+	var order *entity.Order
+	status := 0
+	if err := c.ShouldBindJSON(&order); err != nil {
+		status = 1
+	} else {
+		status = o.orderService.FinishOrder(order)
+	}
+	c.JSON(http.StatusOK, status)
 }

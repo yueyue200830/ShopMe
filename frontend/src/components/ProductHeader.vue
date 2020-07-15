@@ -25,7 +25,7 @@
     },
     created() {
       this.$http
-        .get('/api/categories')
+        .get('/api/allCategories')
         .then(response => {
           this.categories = response.data
         })

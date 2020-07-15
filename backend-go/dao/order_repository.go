@@ -49,14 +49,19 @@ func (o *OrderRepository) GetProductsByOrderID(orderID int) []entity.ProductOfOr
 	return products
 }
 
-func (o *OrderRepository) UpdateOrderStatusToCancel(order *entity.Order) {
+func (o *OrderRepository) UpdateOrderStatusToCancel(order *entity.Order) error {
 	updateMap := map[string]interface{}{"status": entity.Canceled, "cancel_time": time.Now()}
-	db.Model(&order).UpdateColumns(updateMap)
+	return db.Model(&order).UpdateColumns(updateMap).Error
 }
 
-func (o *OrderRepository) UpdateOrderStatusToPaid(order *entity.Order) {
+func (o *OrderRepository) UpdateOrderStatusToPaid(order *entity.Order) error {
 	updateMap := map[string]interface{}{"status": entity.Paid, "pay_time": time.Now()}
-	db.Model(&order).UpdateColumns(updateMap)
+	return db.Model(&order).UpdateColumns(updateMap).Error
+}
+
+func (o *OrderRepository) UpdateOrderStatusToFinish(order *entity.Order) error {
+	updateMap := map[string]interface{}{"status": entity.Finished, "finish_time": time.Now()}
+	return db.Model(&order).UpdateColumns(updateMap).Error
 }
 
 func (o *OrderRepository) InsertOrderAndProducts(orderProducts *entity.DetailOrderWithProducts) (error, int) {

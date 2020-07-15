@@ -39,6 +39,16 @@ func (u *UserService) GetAllUsers() []entity.User {
 	return u.userRepository.GetAllUsers()
 }
 
+func (u *UserService) GetUsers(page, size int) ([]entity.User, int, int) {
+	status := 0
+	users, err := u.userRepository.GetUsersByPage(page, size)
+	if err != nil {
+		status = 1
+	}
+	num := u.userRepository.GetUserNumber()
+	return users, num, status
+}
+
 // Return 0 for not found
 func (u *UserService) ValidateUser(user entity.User) (id int) {
 	return u.userRepository.GetUserIDByNameAndPassword(user)

@@ -35,3 +35,37 @@ func (m *ManagerService) GetManagerInfo(id int) (name string, status int){
 	}
 	return name, status
 }
+
+func (m *ManagerService) GetManagers(page, size int) ([]entity.Manager, int, int) {
+	status := 0
+	users, err := m.managerRepository.GetManagersByPage(page, size)
+	if err != nil {
+		status = 1
+	}
+	num := m.managerRepository.GetManagerNumber()
+	return users, num, status
+}
+
+func (m *ManagerService) DeleteManager(id int) (status int) {
+	if id == 0 {
+		return 1
+	}
+	if err := m.managerRepository.DeleteManagerByID(id); err != nil {
+		return 0
+	}
+	return 1
+}
+
+func (m *ManagerService) UpdateManager(manager *entity.Manager) (status int) {
+	if err := m.managerRepository.UpdateManager(manager); err != nil {
+		return 1
+	}
+	return 0
+}
+
+func (m *ManagerService) CreateManager(manager *entity.Manager) (status int) {
+	if err := m.managerRepository.CreateManager(manager); err != nil {
+		return 1
+	}
+	return 0
+}

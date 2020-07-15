@@ -17,7 +17,7 @@ export function getProductNumber() {
 
 export function getCategory() {
   return request({
-    url: '/categories',
+    url: '/allCategories',
     method: 'get',
   })
 }

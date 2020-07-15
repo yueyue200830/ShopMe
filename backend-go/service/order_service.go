@@ -46,12 +46,20 @@ func (o *OrderService) GetUserOrdersByPage(page, pageSize, userID int) []entity.
 	return ordersWithProducts
 }
 
-func (o *OrderService) CancelOrder(order *entity.Order) {
-	o.orderRepository.UpdateOrderStatusToCancel(order)
+func (o *OrderService) CancelOrder(order *entity.Order) int {
+	err := o.orderRepository.UpdateOrderStatusToCancel(order)
+	if err != nil {
+		return 1
+	}
+	return 0
 }
 
-func (o *OrderService) PayOrder(order *entity.Order) {
-	o.orderRepository.UpdateOrderStatusToPaid(order)
+func (o *OrderService) PayOrder(order *entity.Order) int {
+	err := o.orderRepository.UpdateOrderStatusToPaid(order)
+	if err != nil {
+		return 1
+	}
+	return 0
 }
 
 func (o *OrderService) NewOrder(orderProducts *entity.DetailOrderWithProducts) (status, id int) {
@@ -62,4 +70,12 @@ func (o *OrderService) NewOrder(orderProducts *entity.DetailOrderWithProducts) (
 		status = 0
 	}
 	return status, id
+}
+
+func (o *OrderService) FinishOrder(order *entity.Order) int {
+	err := o.orderRepository.UpdateOrderStatusToFinish(order)
+	if err != nil {
+		return 1
+	}
+	return 0
 }

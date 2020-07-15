@@ -21,6 +21,18 @@ func (c *CategoryRepository) GetAllCategories() []entity.Category {
 	return categories
 }
 
+func (c *CategoryRepository) GetCategoriesByPage(page, pageSize int) (categories []entity.CategoryWithNum, err error) {
+	offsetNum := (page - 1) * pageSize
+	joined := db.Raw("select * from categories left join (select category_id, count(*) as num from products group by category_id) as p on id = category_id")
+	err = joined.Order("id desc").Offset(offsetNum).Limit(pageSize).Find(&categories).Error
+	return categories, err
+}
+
+func (c *CategoryRepository) GetCategoryNumber() (number int) {
+	db.Model(&entity.Category{}).Count(&number)
+	return number
+}
+
 func (c *CategoryRepository) DeleteCategoryByID(id int) error {
 	return db.Where("id = ?", id).Delete(&entity.Category{}).Error
 }
