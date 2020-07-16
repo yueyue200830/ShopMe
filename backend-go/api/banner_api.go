@@ -77,7 +77,7 @@ func (b *BannerController) uploadBannerImage(c *gin.Context) {
 
 	name, status = b.bannerService.GenerateRandomImageName(fileType)
 	if status == 0 {
-		err := c.SaveUploadedFile(file, "../images/banners/" + name)
+		err := c.SaveUploadedFile(file, "../images/banners/"+name)
 		if err != nil {
 			status = 1
 		}
@@ -89,7 +89,7 @@ func (b *BannerController) uploadBannerImage(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
-		"url": url,
+		"url":  url,
 	})
 }
 

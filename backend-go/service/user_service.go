@@ -59,8 +59,8 @@ func (u *UserService) ValidateUserName(name string, id int) bool {
 	userID := u.userRepository.GetUserIDByName(name)
 	if userID > 0 && id != userID {
 		return true
- 	} else {
- 		return false
+	} else {
+		return false
 	}
 }
 
@@ -80,14 +80,14 @@ func (u *UserService) Register(user entity.User) int {
 	if err != nil {
 		fmt.Println(err)
 		return 4
-	} else if !match || u.ValidateUserName(user.Name, 0){
+	} else if !match || u.ValidateUserName(user.Name, 0) {
 		return 1
 	}
 	match, err = regexp.MatchString("^[a-zA-Z0-9]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", user.Email)
 	if err != nil {
 		fmt.Println(err)
 		return 4
-	} else if !match || u.ValidateUserEmail(user.Email, 0){
+	} else if !match || u.ValidateUserEmail(user.Email, 0) {
 		return 2
 	}
 	// check whether there is alphabet & number
@@ -120,8 +120,8 @@ func (u *UserService) GetUserInfo(id int) map[string]interface{} {
 		user.Avatar = "default.png"
 	}
 	info := map[string]interface{}{
-		"name": user.Name,
-		"email": user.Email,
+		"name":   user.Name,
+		"email":  user.Email,
 		"avatar": user.Avatar,
 	}
 	return info

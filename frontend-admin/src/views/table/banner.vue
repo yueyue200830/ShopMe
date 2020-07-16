@@ -25,6 +25,7 @@
       >
         新增
       </el-button>
+      <el-button type="primary" icon="el-icon-refresh-right" circle @click="handleRefresh" />
     </div>
 
     <el-table
@@ -342,6 +343,10 @@ export default {
       this.listQuery.page = newPage
       this.getList()
     },
+    handleRefresh() {
+      this.listLoading = true
+      this.getList()
+    }
   }
 }
 </script>

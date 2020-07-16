@@ -43,6 +43,18 @@ func (o *OrderRepository) GetOrdersByUserIDAndPage(page, pageSize, userID int) [
 	return orders
 }
 
+func (o *OrderRepository) GetOrdersWithUserByPage(page, pageSize int) ([]entity.OrderWithUser, error) {
+	var orders []entity.OrderWithUser
+	offSetNum := (page - 1) * pageSize
+	err := db.Table("orders").Order("id desc").Offset(offSetNum).Limit(pageSize).Scan(&orders).Error
+	return orders, err
+}
+
+func (o *OrderRepository) GetOrderNumber() (number int) {
+	db.Table("orders").Count(&number)
+	return number
+}
+
 func (o *OrderRepository) GetProductsByOrderID(orderID int) []entity.ProductOfOrder {
 	var products []entity.ProductOfOrder
 	db.Raw("select * from (select * from order_products where order_id = ?) as order_products join products on product_id = id", orderID).Scan(&products)
@@ -79,11 +91,11 @@ func (o *OrderRepository) InsertOrderAndProducts(orderProducts *entity.DetailOrd
 			tx.Rollback()
 			return errors.New("stock is not enough"), -1
 		}
-		if err := tx.Model(&p).UpdateColumn("stock", p.Stock - product.Num).Error; err != nil {
+		if err := tx.Model(&p).UpdateColumn("stock", p.Stock-product.Num).Error; err != nil {
 			tx.Rollback()
 			return err, -1
 		}
-		sum = sum + float32(product.Num) * product.Price
+		sum = sum + float32(product.Num)*product.Price
 
 	}
 

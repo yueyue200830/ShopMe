@@ -68,7 +68,7 @@ func (p *ProductService) GetProductsNames() []string {
 
 func (p *ProductService) AddProduct(product *entity.Product) int {
 	image := strings.Split(product.Image, "/")
-	product.Image = image[len(image) - 1]
+	product.Image = image[len(image)-1]
 
 	err := p.productRepository.AddProduct(product)
 	if err != nil {
@@ -79,7 +79,7 @@ func (p *ProductService) AddProduct(product *entity.Product) int {
 
 func (p *ProductService) UpdateProduct(product *entity.Product) int {
 	image := strings.Split(product.Image, "/")
-	product.Image = image[len(image) - 1]
+	product.Image = image[len(image)-1]
 
 	err := p.productRepository.UpdateProduct(product)
 	if err != nil {

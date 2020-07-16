@@ -45,7 +45,7 @@ func (c *CategoryController) getCategories(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": gin.H{
-			"num": num,
+			"num":  num,
 			"list": categories,
 		},
 	})
@@ -84,4 +84,3 @@ func (c *CategoryController) createCategory(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, status)
 }
-

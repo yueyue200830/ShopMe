@@ -89,6 +89,39 @@ export const constantRoutes = [
   },
 
   {
+    path: '/order',
+    component: Layout,
+    children: [{
+      path: 'index',
+      name: 'Order',
+      component: () => import('@/views/table/order'),
+      meta: { title: '订单', icon: 'table' }
+    }]
+  },
+
+  {
+    path: '/user',
+    component: Layout,
+    children: [{
+      path: 'index',
+      name: 'User',
+      component: () => import('@/views/table/user'),
+      meta: { title: '用户', icon: 'table' }
+    }]
+  },
+
+  {
+    path: '/manager',
+    component: Layout,
+    children: [{
+      path: 'index',
+      name: 'Manager',
+      component: () => import('@/views/table/manager'),
+      meta: { title: '管理员', icon: 'table' }
+    }]
+  },
+
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',

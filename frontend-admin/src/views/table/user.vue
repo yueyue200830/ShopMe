@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <div class="action-container">
-      <el-button
-        class="action-button"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        添加类别
-      </el-button>
+<!--      <el-button-->
+<!--        class="action-button"-->
+<!--        type="primary"-->
+<!--        icon="el-icon-edit"-->
+<!--        @click="handleCreate"-->
+<!--      >-->
+<!--        添加用户-->
+<!--      </el-button>-->
       <el-button type="primary" icon="el-icon-refresh-right" circle @click="handleRefresh" />
     </div>
 
@@ -26,26 +26,26 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" min-width="150px">
+      <el-table-column label="用户名" min-width="150px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品数量" align="center" width="95">
+      <el-table-column label="邮箱" width="250">
         <template slot-scope="{row}">
-          <span>{{ row.num }}</span>
+          <span>{{ row.email }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
-          <el-button size="mini" type="danger" @click="deleteProduct(row,$index)">
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">-->
+<!--        <template slot-scope="{row,$index}">-->
+<!--          <el-button type="primary" size="mini" @click="handleUpdate(row)">-->
+<!--            编辑-->
+<!--          </el-button>-->
+<!--          <el-button size="mini" type="danger" @click="deleteProduct(row,$index)">-->
+<!--            删除-->
+<!--          </el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
 
     <div class="page-div">
@@ -61,45 +61,44 @@
       />
     </div>
 
-    <el-dialog
-      :title="textMap[dialogStatus]"
-      :visible.sync="dialogFormVisible"
-    >
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="80px"
-        style="width: 360px; margin-left:50px;"
-      >
-        <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">
-          <el-input v-model="temp.id" disabled />
-        </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
-      </div>
-    </el-dialog>
+<!--    <el-dialog-->
+<!--      :title="textMap[dialogStatus]"-->
+<!--      :visible.sync="dialogFormVisible"-->
+<!--    >-->
+<!--      <el-form-->
+<!--        ref="dataForm"-->
+<!--        :rules="rules"-->
+<!--        :model="temp"-->
+<!--        label-position="left"-->
+<!--        label-width="80px"-->
+<!--        style="width: 360px; margin-left:50px;"-->
+<!--      >-->
+<!--        <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">-->
+<!--          <el-input v-model="temp.id" disabled />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="名称" prop="name">-->
+<!--          <el-input v-model="temp.name" />-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
+<!--      <div slot="footer" class="dialog-footer">-->
+<!--        <el-button @click="dialogFormVisible = false">-->
+<!--          取消-->
+<!--        </el-button>-->
+<!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
+<!--          确认-->
+<!--        </el-button>-->
+<!--      </div>-->
+<!--    </el-dialog>-->
   </div>
 </template>
 
 <script>
-import * as api from '@/api/category'
+import * as api from '@/api/user'
 
 export default {
-  name: 'Category',
+  name: 'User',
   data() {
     const validateName = (rule, value, callback) => {
-      // todo: check duplicate name
       if (this.temp.name === '') {
         callback(new Error('请输入名称'))
       } else {
@@ -118,7 +117,7 @@ export default {
       temp: {
         id: undefined,
         name: '',
-        num: undefined,
+        email: '',
       },
       dialogFormVisible: false,
       dialogTableVisible: false,
@@ -138,7 +137,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      api.getCategories(this.listQuery).then(response => {
+      api.getUsers(this.listQuery).then(response => {
         const { code, data } = response
         if (code !== 0) {
           this.$message.error('获取列表失败')
@@ -154,7 +153,7 @@ export default {
       this.temp = {
         id: undefined,
         name: '',
-        num: undefined,
+        email: '',
       }
     },
     handleCreate() {
@@ -168,14 +167,14 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          api.createCategory(this.temp).then(response => {
-            if (response !== 0) {
-              this.$message.error('创建失败，请重试')
-            } else {
-              this.dialogFormVisible = false
-              this.getList()
-            }
-          })
+          // api.createCategory(this.temp).then(response => {
+          //   if (response !== 0) {
+          //     this.$message.error('创建失败，请重试')
+          //   } else {
+          //     this.dialogFormVisible = false
+          //     this.getList()
+          //   }
+          // })
         }
       })
     },
@@ -190,27 +189,27 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          api.updateCategory(this.temp).then(response => {
-            if (response !== 0) {
-              this.$message.error('更新失败，请重试')
-            } else {
-              this.dialogFormVisible = false
-              this.getList()
-            }
-          })
+          // api.updateCategory(this.temp).then(response => {
+          //   if (response !== 0) {
+          //     this.$message.error('更新失败，请重试')
+          //   } else {
+          //     this.dialogFormVisible = false
+          //     this.getList()
+          //   }
+          // })
         }
       })
     },
     deleteProduct(row) {
       const deleteQuery = { id: row.id }
-      api.deleteCategory(deleteQuery).then(response => {
-        if (response === 0) {
-          this.$message.success('删除成功')
-        } else {
-          this.$message.error('删除失败，请重试')
-        }
-        this.getList()
-      })
+      // api.deleteCategory(deleteQuery).then(response => {
+      //   if (response === 0) {
+      //     this.$message.success('删除成功')
+      //   } else {
+      //     this.$message.error('删除失败，请重试')
+      //   }
+      //   this.getList()
+      // })
     },
     handleSizeChange(newSize) {
       this.listQuery.size = newSize

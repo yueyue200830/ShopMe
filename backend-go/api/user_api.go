@@ -170,7 +170,7 @@ func (u *UserController) getUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": gin.H{
-			"num": num,
+			"num":  num,
 			"list": users,
 		},
 	})

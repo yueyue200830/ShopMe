@@ -38,3 +38,8 @@ type BannerProduct struct {
 	Image string  `json:"image"`
 	Title string  `json:"title"`
 }
+
+type OrderWithUser struct {
+	Order
+	Name string `json:"name"`
+}

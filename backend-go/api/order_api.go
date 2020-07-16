@@ -17,6 +17,7 @@ func orderApiRegister(router *gin.Engine) {
 	router.GET("/order", curd.getOrder)
 	router.GET("/orderNumber", curd.getUserOrderNumber)
 	router.GET("/orders", curd.getUserOrdersByPage)
+	router.GET("/orders/all", curd.getOrders)
 	router.POST("/cancelOrder", curd.cancelOrder)
 	router.POST("/payOrder", curd.payOrder)
 	router.POST("/order", curd.newOrder)
@@ -36,7 +37,7 @@ func (o *OrderController) getOrder(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H {
+	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": order,
 	})
@@ -126,4 +127,30 @@ func (o *OrderController) finishOrder(c *gin.Context) {
 		status = o.orderService.FinishOrder(order)
 	}
 	c.JSON(http.StatusOK, status)
+}
+
+func (o *OrderController) getOrders(c *gin.Context) {
+	status := 0
+	num := 0
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page < 1 {
+		status = 1
+	}
+	pageSize, err := strconv.Atoi(c.Query("size"))
+	if err != nil || pageSize < 1 {
+		status = 1
+	}
+
+	var orders []entity.OrderWithUser
+	if status == 0 {
+		orders, num, status = o.orderService.GetOrders(page, pageSize)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": gin.H{
+			"total": num,
+			"list":  orders,
+		},
+	})
 }

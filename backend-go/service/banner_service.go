@@ -65,7 +65,7 @@ func (b *BannerService) UpdateBanner(bannerProduct *entity.BannerProduct) (statu
 	banner := bannerProduct.Banner
 	// get banner name
 	name := strings.Split(banner.Banner, "/")
-	banner.Banner = name[len(name) - 1]
+	banner.Banner = name[len(name)-1]
 
 	err := b.bannerRepository.UpdateBanner(banner)
 	if err != nil {
@@ -78,7 +78,7 @@ func (b *BannerService) CreateBanner(bannerProduct *entity.BannerProduct) (statu
 	banner := bannerProduct.Banner
 	// get banner name
 	name := strings.Split(banner.Banner, "/")
-	banner.Banner = name[len(name) - 1]
+	banner.Banner = name[len(name)-1]
 
 	err := b.bannerRepository.CreateBanner(banner)
 	if err != nil {

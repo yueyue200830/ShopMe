@@ -155,7 +155,7 @@ func (p *ProductController) uploadProductImage(c *gin.Context) {
 
 	name, status = p.productService.GenerateRandomImageName(fileType)
 	if status == 0 {
-		err := c.SaveUploadedFile(file, "../images/products/" + name)
+		err := c.SaveUploadedFile(file, "../images/products/"+name)
 		if err != nil {
 			status = 1
 		}
@@ -167,6 +167,6 @@ func (p *ProductController) uploadProductImage(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
-		"url": url,
+		"url":  url,
 	})
 }

@@ -79,3 +79,24 @@ func (o *OrderService) FinishOrder(order *entity.Order) int {
 	}
 	return 0
 }
+
+func (o *OrderService) GetOrders(page, pageSize int) ([]entity.OrderWithUser, int, int) {
+	status := 0
+	num := 0
+	orders, err := o.orderRepository.GetOrdersWithUserByPage(page, pageSize)
+	if err != nil {
+		status = 1
+	} else {
+		for i, order := range orders {
+			name, err := userService.userRepository.GetUserName(order.UserID)
+			if err != nil {
+				status = 1
+				break
+			} else {
+				orders[i].Name = name
+			}
+		}
+		num = o.orderRepository.GetOrderNumber()
+	}
+	return orders, num, status
+}

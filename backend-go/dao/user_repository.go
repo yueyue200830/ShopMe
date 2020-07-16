@@ -91,7 +91,7 @@ func (u *UserRepository) UpdatePassword(id int, oldPassword, newPassword string)
 		return err
 	}
 
-	if err:= tx.Commit().Error; err != nil {
+	if err := tx.Commit().Error; err != nil {
 		return err
 	}
 
@@ -111,4 +111,10 @@ func (u *UserRepository) UpdateNameAndEmail(user *entity.User) int {
 		status = 1
 	}
 	return status
+}
+
+func (u *UserRepository) GetUserName(id int) (string, error) {
+	user := &entity.User{ID: id}
+	err := db.Select("id, name").First(&user).Error
+	return user.Name, err
 }

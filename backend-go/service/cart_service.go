@@ -36,7 +36,7 @@ func (c *CartService) AddProduct(cart *entity.Cart) (status int) {
 		cart.Num = num
 		err = c.cartRepository.AddCart(cart)
 	} else {
-		err = c.cartRepository.UpdateCartNum(cart, cart.Num + num)
+		err = c.cartRepository.UpdateCartNum(cart, cart.Num+num)
 	}
 
 	if err != nil {

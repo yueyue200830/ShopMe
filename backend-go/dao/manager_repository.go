@@ -28,7 +28,7 @@ func (m *ManagerRepository) GetManagerInfoByID(id int) *entity.Manager {
 func (m *ManagerRepository) GetManagersByPage(page, size int) (managers []entity.Manager, err error) {
 	offsetNum := (page - 1) * size
 	dbManagers := db.Table("managers").Order("id desc").Offset(offsetNum).Limit(size)
-	err = dbManagers.Select("id, name, email, avatar").Scan(&managers).Error
+	err = dbManagers.Select("id, name").Scan(&managers).Error
 	return managers, err
 }
 

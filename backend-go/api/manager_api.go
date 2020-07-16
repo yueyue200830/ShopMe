@@ -21,6 +21,7 @@ func managerApiRegister(router *gin.Engine) {
 	router.PUT("/manager", curd.updateManager)
 	router.POST("/manager", curd.createManager)
 	router.DELETE("/manager", curd.deleteManager)
+	router.PUT("/manager/password/reset", curd.resetPassword)
 }
 
 func (m *ManagerController) managerLogin(c *gin.Context) {
@@ -60,7 +61,7 @@ func (m *ManagerController) getManagerInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": gin.H{
-			"name": name,
+			"name":   name,
 			"avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
 		},
 	})
@@ -85,7 +86,7 @@ func (m *ManagerController) getManagers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": status,
 		"data": gin.H{
-			"num": num,
+			"num":  num,
 			"list": managers,
 		},
 	})
@@ -104,13 +105,17 @@ func (m *ManagerController) updateManager(c *gin.Context) {
 
 func (m *ManagerController) createManager(c *gin.Context) {
 	status := 0
+	password := ""
 	var manager *entity.Manager
 	if err := c.ShouldBindJSON(&manager); err != nil {
 		status = 1
 	} else {
-		status = m.managerService.CreateManager(manager)
+		status, password = m.managerService.CreateManager(manager)
 	}
-	c.JSON(http.StatusOK, status)
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": password,
+	})
 }
 
 func (m *ManagerController) deleteManager(c *gin.Context) {
@@ -123,4 +128,19 @@ func (m *ManagerController) deleteManager(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, status)
+}
+
+func (m *ManagerController) resetPassword(c *gin.Context) {
+	status := 0
+	password := ""
+	var manager *entity.Manager
+	if err := c.ShouldBindJSON(&manager); err != nil {
+		status = 1
+	} else {
+		status, password = m.managerService.ResetPassword(manager)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": status,
+		"data": password,
+	})
 }

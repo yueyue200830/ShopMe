@@ -1,24 +1,9 @@
 import request from '@/utils/request'
 
-export function login(data) {
+export function getUsers(query) {
   return request({
-    url: '/manager/login',
-    method: 'post',
-    data
-  })
-}
-
-export function getInfo(token) {
-  return request({
-    url: '/manager/info',
+    url: '/users',
     method: 'get',
-    params: { token }
-  })
-}
-
-export function logout() {
-  return request({
-    url: '/manager/logout',
-    method: 'post'
+    params: query
   })
 }

@@ -7,7 +7,7 @@
         icon="el-icon-edit"
         @click="handleCreate"
       >
-        添加类别
+        添加管理员
       </el-button>
       <el-button type="primary" icon="el-icon-refresh-right" circle @click="handleRefresh" />
     </div>
@@ -26,22 +26,17 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" min-width="150px">
+      <el-table-column label="用户名" min-width="150px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="产品数量" align="center" width="95">
-        <template slot-scope="{row}">
-          <span>{{ row.num }}</span>
+          <span class="link-type">{{ row.userName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
+          <el-button type="primary" size="mini" @click="handleReset(row)">
+            重置密码
           </el-button>
-          <el-button size="mini" type="danger" @click="deleteProduct(row,$index)">
+          <el-button size="mini" type="danger" @click="deleteManager(row,$index)">
             删除
           </el-button>
         </template>
@@ -62,7 +57,7 @@
     </div>
 
     <el-dialog
-      :title="textMap[dialogStatus]"
+      title="创建管理员"
       :visible.sync="dialogFormVisible"
     >
       <el-form
@@ -76,15 +71,16 @@
         <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">
           <el-input v-model="temp.id" disabled />
         </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name" />
+        <el-form-item label="用户名" prop="userName">
+          <el-input v-model="temp.userName" />
         </el-form-item>
+        系统会自动生成初始密码，请注意保存，无法重新查看
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="createData()">
           确认
         </el-button>
       </div>
@@ -93,15 +89,15 @@
 </template>
 
 <script>
-import * as api from '@/api/category'
+import * as api from '@/api/manager'
 
 export default {
-  name: 'Category',
+  name: 'Manager',
   data() {
     const validateName = (rule, value, callback) => {
       // todo: check duplicate name
-      if (this.temp.name === '') {
-        callback(new Error('请输入名称'))
+      if (this.temp.userName === '') {
+        callback(new Error('请输入用户名'))
       } else {
         callback()
       }
@@ -117,18 +113,12 @@ export default {
       },
       temp: {
         id: undefined,
-        name: '',
-        num: undefined,
+        userName: '',
       },
       dialogFormVisible: false,
-      dialogTableVisible: false,
       dialogStatus: '',
-      textMap: {
-        update: '编辑',
-        create: '创建'
-      },
       rules: {
-        name: [{ validator: validateName }],
+        userName: [{ validator: validateName }],
       },
     }
   },
@@ -138,7 +128,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      api.getCategories(this.listQuery).then(response => {
+      api.getManagers(this.listQuery).then(response => {
         const { code, data } = response
         if (code !== 0) {
           this.$message.error('获取列表失败')
@@ -153,8 +143,7 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        name: '',
-        num: undefined,
+        userName: '',
       }
     },
     handleCreate() {
@@ -168,10 +157,40 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          api.createCategory(this.temp).then(response => {
-            if (response !== 0) {
+          api.createManager(this.temp).then(response => {
+            const { code, data } = response
+            if (code !== 0) {
               this.$message.error('创建失败，请重试')
             } else {
+              this.$alert(data, '初始密码', {
+                confirmButtonText: '确定',
+                callback: () => {
+                  this.dialogFormVisible = false
+                  this.getList()
+                }
+              })
+            }
+          })
+        }
+      })
+    },
+    handleReset(row) {
+      this.$confirm(`是否重置用户${row.userName}密码`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(() => {
+        this.resetPassword(row)
+      }).catch(() => {})
+    },
+    resetPassword(row) {
+      api.resetManagerPassword(row).then(response => {
+        const { code, data } = response
+        if (code !== 0) {
+          this.$message.error('重置失败，请重试')
+        } else {
+          this.$alert(data, '重置密码', {
+            confirmButtonText: '确定',
+            callback: () => {
               this.dialogFormVisible = false
               this.getList()
             }
@@ -179,31 +198,9 @@ export default {
         }
       })
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          api.updateCategory(this.temp).then(response => {
-            if (response !== 0) {
-              this.$message.error('更新失败，请重试')
-            } else {
-              this.dialogFormVisible = false
-              this.getList()
-            }
-          })
-        }
-      })
-    },
-    deleteProduct(row) {
+    deleteManager(row) {
       const deleteQuery = { id: row.id }
-      api.deleteCategory(deleteQuery).then(response => {
+      api.deleteManager(deleteQuery).then(response => {
         if (response === 0) {
           this.$message.success('删除成功')
         } else {

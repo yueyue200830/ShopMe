@@ -25,6 +25,7 @@
       >
         新增
       </el-button>
+      <el-button type="primary" icon="el-icon-refresh-right" circle @click="handleRefresh" />
     </div>
 
     <el-table
@@ -119,13 +120,13 @@
           <el-input v-model="temp.id" disabled />
         </el-form-item>
         <el-form-item label="商品名称" prop="title">
-          <el-input v-model="temp.title"/>
+          <el-input v-model="temp.title" />
         </el-form-item>
         <el-form-item label="价格" prop="price">
-          <el-input-number v-model="temp.price" :precision="2" :step="1" :min="0.01"/>
+          <el-input-number v-model="temp.price" :precision="2" :step="1" :min="0.01" />
         </el-form-item>
         <el-form-item label="库存" prop="stock">
-          <el-input-number v-model="temp.stock" :min="0"/>
+          <el-input-number v-model="temp.stock" :min="0" />
         </el-form-item>
         <el-form-item label="图片" prop="imageUrl">
           <el-upload
@@ -221,7 +222,7 @@
         </el-table-column>
         <el-table-column align="center" label="删除" width="80">
           <template slot-scope="{row}">
-            <i class="el-icon-close" @click="handleDetailDelete(row)"/>
+            <i class="el-icon-close" @click="handleDetailDelete(row)" />
           </template>
         </el-table-column>
       </el-table>
@@ -238,7 +239,7 @@ import * as productAPI from '@/api/product'
 import Sortable from 'sortablejs'
 
 export default {
-  name: 'product',
+  name: 'Product',
   data() {
     const validateImageUrl = (rule, value, callback) => {
       if (this.temp.image === '' || this.temp.imageUrl === '') {
@@ -406,7 +407,7 @@ export default {
       })
     },
     deleteProduct(row) {
-      const deleteQuery = {id: row.id}
+      const deleteQuery = { id: row.id }
       productAPI.deleteProduct(deleteQuery).then(response => {
         if (response === 0) {
           this.$message.success('删除成功')
@@ -417,7 +418,7 @@ export default {
       })
     },
     handleImageUploadSuccess(response) {
-      const {code, url} = response
+      const { code, url } = response
       if (code !== 0) {
         this.$message.error('上传失败，请重试')
       } else {
@@ -445,7 +446,7 @@ export default {
     },
     handleDetailInvisible() {
       this.dialogTableVisible = false
-      this.productDetails= [{
+      this.productDetails = [{
         productID: undefined,
         order: 1,
         title: 'test',
@@ -454,7 +455,7 @@ export default {
       }]
     },
     handleDetailUploadSuccess(response) {
-      const {code, url} = response
+      const { code, url } = response
       if (code !== 0) {
         this.$message.error('上传失败，请重试')
       } else {
@@ -468,7 +469,7 @@ export default {
         })
         productAPI.updateProductDetails(this.productDetails).then(response => {
           if (response !== 0) {
-            this.$message.error("上传失败，请重试")
+            this.$message.error('上传失败，请重试')
           }
         }).finally(() => {
           this.getProductDetails()
@@ -478,19 +479,19 @@ export default {
     handleDetailOrderChange() {
       console.log(this.productDetails)
       if (this.productDetails.length === 0) {
-        this.$message.error("请至少上传一张详情图片")
+        this.$message.error('请至少上传一张详情图片')
         return
       }
       productAPI.updateProductDetails(this.productDetails).then(response => {
         if (response === 0) {
-          this.dialogTableVisible = false;
+          this.dialogTableVisible = false
           this.handleDetailInvisible()
         }
       })
     },
     handleDetailDelete(row) {
       if (this.productDetails.length === 1) {
-        this.$message.error("删除失败，请确保至少有一张详情图片")
+        this.$message.error('删除失败，请确保至少有一张详情图片')
         return
       }
       let i
@@ -504,12 +505,16 @@ export default {
       console.log(this.productDetails)
       productAPI.updateProductDetails(this.productDetails).then(response => {
         if (response !== 0) {
-          this.$message.error("删除失败，请重试")
+          this.$message.error('删除失败，请重试')
         }
       }).finally(() => {
         this.detailLoading = true
         this.getProductDetails()
       })
+    },
+    handleRefresh() {
+      this.listLoading = true
+      this.getList()
     },
     handleFilter() {
       // todo: handle filter
@@ -517,7 +522,7 @@ export default {
       // this.getList()
     },
     getProductDetails() {
-      productAPI.getProductDetails({id: this.productInfo.id}).then(response => {
+      productAPI.getProductDetails({ id: this.productInfo.id }).then(response => {
         const { code, data } = response
         if (code !== 0) {
           this.$message.error('产品详情加载失败')
