@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <div class="action-container">
-<!--      <el-button-->
-<!--        class="action-button"-->
-<!--        type="primary"-->
-<!--        icon="el-icon-edit"-->
-<!--        @click="handleCreate"-->
-<!--      >-->
-<!--        添加用户-->
-<!--      </el-button>-->
       <el-button type="primary" icon="el-icon-refresh-right" circle @click="handleRefresh" />
     </div>
 
@@ -36,16 +28,6 @@
           <span>{{ row.email }}</span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">-->
-<!--        <template slot-scope="{row,$index}">-->
-<!--          <el-button type="primary" size="mini" @click="handleUpdate(row)">-->
-<!--            编辑-->
-<!--          </el-button>-->
-<!--          <el-button size="mini" type="danger" @click="deleteProduct(row,$index)">-->
-<!--            删除-->
-<!--          </el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
     </el-table>
 
     <div class="page-div">
@@ -60,35 +42,6 @@
         @current-change="handlePageChange"
       />
     </div>
-
-<!--    <el-dialog-->
-<!--      :title="textMap[dialogStatus]"-->
-<!--      :visible.sync="dialogFormVisible"-->
-<!--    >-->
-<!--      <el-form-->
-<!--        ref="dataForm"-->
-<!--        :rules="rules"-->
-<!--        :model="temp"-->
-<!--        label-position="left"-->
-<!--        label-width="80px"-->
-<!--        style="width: 360px; margin-left:50px;"-->
-<!--      >-->
-<!--        <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">-->
-<!--          <el-input v-model="temp.id" disabled />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="名称" prop="name">-->
-<!--          <el-input v-model="temp.name" />-->
-<!--        </el-form-item>-->
-<!--      </el-form>-->
-<!--      <div slot="footer" class="dialog-footer">-->
-<!--        <el-button @click="dialogFormVisible = false">-->
-<!--          取消-->
-<!--        </el-button>-->
-<!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-<!--          确认-->
-<!--        </el-button>-->
-<!--      </div>-->
-<!--    </el-dialog>-->
   </div>
 </template>
 
@@ -98,13 +51,6 @@ import * as api from '@/api/user'
 export default {
   name: 'User',
   data() {
-    const validateName = (rule, value, callback) => {
-      if (this.temp.name === '') {
-        callback(new Error('请输入名称'))
-      } else {
-        callback()
-      }
-    }
     return {
       list: null,
       total: 0,
@@ -113,21 +59,6 @@ export default {
       listQuery: {
         page: 1,
         size: 10,
-      },
-      temp: {
-        id: undefined,
-        name: '',
-        email: '',
-      },
-      dialogFormVisible: false,
-      dialogTableVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: '编辑',
-        create: '创建'
-      },
-      rules: {
-        name: [{ validator: validateName }],
       },
     }
   },
@@ -148,68 +79,6 @@ export default {
       }).finally(() => {
         this.listLoading = false
       })
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        name: '',
-        email: '',
-      }
-    },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          // api.createCategory(this.temp).then(response => {
-          //   if (response !== 0) {
-          //     this.$message.error('创建失败，请重试')
-          //   } else {
-          //     this.dialogFormVisible = false
-          //     this.getList()
-          //   }
-          // })
-        }
-      })
-    },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          // api.updateCategory(this.temp).then(response => {
-          //   if (response !== 0) {
-          //     this.$message.error('更新失败，请重试')
-          //   } else {
-          //     this.dialogFormVisible = false
-          //     this.getList()
-          //   }
-          // })
-        }
-      })
-    },
-    deleteProduct(row) {
-      const deleteQuery = { id: row.id }
-      // api.deleteCategory(deleteQuery).then(response => {
-      //   if (response === 0) {
-      //     this.$message.success('删除成功')
-      //   } else {
-      //     this.$message.error('删除失败，请重试')
-      //   }
-      //   this.getList()
-      // })
     },
     handleSizeChange(newSize) {
       this.listQuery.size = newSize

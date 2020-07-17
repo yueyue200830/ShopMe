@@ -19,6 +19,7 @@ func categoryApiRegister(router *gin.Engine) {
 	router.DELETE("/category", curd.deleteCategory)
 	router.PUT("/category", curd.updateCategory)
 	router.POST("/category", curd.createCategory)
+	router.GET("/category/name/check", curd.checkCategoryNameExist)
 }
 
 func (c *CategoryController) getAllCategories(context *gin.Context) {
@@ -83,4 +84,20 @@ func (c *CategoryController) createCategory(context *gin.Context) {
 		status = c.categoryService.CreateCategory(category)
 	}
 	context.JSON(http.StatusOK, status)
+}
+
+func (c *CategoryController) checkCategoryNameExist(context *gin.Context) {
+	var exist int
+	name := context.Query("name")
+	id, err := strconv.Atoi(context.DefaultQuery("id", "0"))
+	if err != nil || id < 0 {
+		exist = 0
+	} else {
+		if c.categoryService.ValidateCategoryName(name, id) {
+			exist = 1
+		} else {
+			exist = 0
+		}
+	}
+	context.JSON(http.StatusOK, exist)
 }

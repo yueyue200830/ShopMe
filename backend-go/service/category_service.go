@@ -56,3 +56,8 @@ func (c *CategoryService) CreateCategory(category *entity.Category) (status int)
 	}
 	return 0
 }
+
+func (c *CategoryService) ValidateCategoryName(name string, id int) bool {
+	categoryID := c.categoryService.GetCategoryIDByName(name)
+	return categoryID > 0 && categoryID != id
+}

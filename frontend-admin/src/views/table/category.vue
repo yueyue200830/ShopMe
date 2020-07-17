@@ -71,6 +71,7 @@
         :model="temp"
         label-position="left"
         label-width="80px"
+        status-icon
         style="width: 360px; margin-left:50px;"
       >
         <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">
@@ -99,11 +100,18 @@ export default {
   name: 'Category',
   data() {
     const validateName = (rule, value, callback) => {
-      // todo: check duplicate name
       if (this.temp.name === '') {
         callback(new Error('请输入名称'))
       } else {
-        callback()
+        api.checkCategoryName({ id: this.temp.id, name: value }).then(response => {
+          if (response !== 0) {
+            callback(new Error('类别名称已存在'))
+          } else {
+            callback()
+          }
+        }).catch(() => {
+          callback(new Error('类别名称检测失败'))
+        })
       }
     }
     return {
@@ -116,7 +124,7 @@ export default {
         size: 10,
       },
       temp: {
-        id: undefined,
+        id: 0,
         name: '',
         num: undefined,
       },
@@ -128,7 +136,7 @@ export default {
         create: '创建'
       },
       rules: {
-        name: [{ validator: validateName }],
+        name: [{ validator: validateName, trigger: 'blur' }],
       },
     }
   },
@@ -152,7 +160,7 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
+        id: 0,
         name: '',
         num: undefined,
       }

@@ -1,21 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
-        v-model="listQuery.title"
-        placeholder="Title"
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >
-        搜索
-      </el-button>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
@@ -243,11 +228,6 @@ export default {
       }).finally(() => {
         this.listLoading = false
       })
-    },
-    handleFilter() {
-      // todo: handle filter
-      // this.currentPage = 1
-      // this.getList()
     },
     getProductList() {
       bannerAPI.getProductList().then(response => {

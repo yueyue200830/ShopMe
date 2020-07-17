@@ -57,8 +57,9 @@ func (m *ManagerService) DeleteManager(id int) (status int) {
 	return 0
 }
 
-func (m *ManagerService) UpdateManager(manager *entity.Manager) (status int) {
-	if err := m.managerRepository.UpdateManager(manager); err != nil {
+func (m *ManagerService) UpdateManager(id int, oldPassword, newPassword string) (status int) {
+
+	if err := m.managerRepository.UpdateManagerPassword(id, oldPassword, newPassword); err != nil {
 		return 1
 	}
 	return 0
@@ -94,4 +95,9 @@ func (m *ManagerService) ResetPassword(manager *entity.Manager) (status int, pas
 		}
 	}
 	return status, password
+}
+
+func (m *ManagerService) ValidateManagerName(name string, id int) bool {
+	managerID := m.managerRepository.GetManagerIDByName(name)
+	return managerID > 0 && managerID != id
 }

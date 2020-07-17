@@ -66,6 +66,7 @@
         :model="temp"
         label-position="left"
         label-width="80px"
+        status-icon
         style="width: 360px; margin-left:50px;"
       >
         <el-form-item v-if="dialogStatus === 'update'" label="ID" prop="id">
@@ -95,11 +96,18 @@ export default {
   name: 'Manager',
   data() {
     const validateName = (rule, value, callback) => {
-      // todo: check duplicate name
       if (this.temp.userName === '') {
         callback(new Error('请输入用户名'))
       } else {
-        callback()
+        api.validManagerName({ name: value }).then(response => {
+          if (response !== 0) {
+            callback(new Error('用户名已存在'))
+          } else {
+            callback()
+          }
+        }).catch(() => {
+          callback(new Error('用户名检测失败'))
+        })
       }
     }
     return {
@@ -118,7 +126,7 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       rules: {
-        userName: [{ validator: validateName }],
+        userName: [{ validator: validateName, trigger: 'blur' }],
       },
     }
   },

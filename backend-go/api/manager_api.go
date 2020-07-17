@@ -22,6 +22,7 @@ func managerApiRegister(router *gin.Engine) {
 	router.POST("/manager", curd.createManager)
 	router.DELETE("/manager", curd.deleteManager)
 	router.PUT("/manager/password/reset", curd.resetPassword)
+	router.GET("/manager/name/check", curd.checkManagerNameExist)
 }
 
 func (m *ManagerController) managerLogin(c *gin.Context) {
@@ -93,12 +94,14 @@ func (m *ManagerController) getManagers(c *gin.Context) {
 }
 
 func (m *ManagerController) updateManager(c *gin.Context) {
+	oldPassword := c.PostForm("oldPassword")
+	newPassword := c.PostForm("newPassword")
 	status := 0
-	var manager *entity.Manager
-	if err := c.ShouldBindJSON(&manager); err != nil {
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
 		status = 1
 	} else {
-		status = m.managerService.UpdateManager(manager)
+		status = m.managerService.UpdateManager(id, oldPassword, newPassword)
 	}
 	c.JSON(http.StatusOK, status)
 }
@@ -143,4 +146,20 @@ func (m *ManagerController) resetPassword(c *gin.Context) {
 		"code": status,
 		"data": password,
 	})
+}
+
+func (m *ManagerController) checkManagerNameExist(c *gin.Context) {
+	var exist int
+	name := c.Query("name")
+	id, err := strconv.Atoi(c.DefaultQuery("id", "0"))
+	if err != nil || id < 0 {
+		exist = 0
+	} else {
+		if m.managerService.ValidateManagerName(name, id) {
+			exist = 1
+		} else {
+			exist = 0
+		}
+	}
+	c.JSON(http.StatusOK, exist)
 }

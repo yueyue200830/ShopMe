@@ -44,3 +44,9 @@ func (c *CategoryRepository) UpdateCategory(category *entity.Category) error {
 func (c *CategoryRepository) CreateCategory(category *entity.Category) error {
 	return db.Create(&category).Error
 }
+
+func (c *CategoryRepository) GetCategoryIDByName(name string) (id int) {
+	var category entity.Category
+	db.Select("id").Where("name = ?", name).First(&category)
+	return category.ID
+}

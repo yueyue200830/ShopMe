@@ -31,3 +31,11 @@ export function deleteCategory(query) {
     params: query
   })
 }
+
+export function checkCategoryName(query) {
+  return request({
+    url: '/category/name/check',
+    method: 'get',
+    params: query
+  })
+}

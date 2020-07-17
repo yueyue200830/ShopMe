@@ -1,85 +1,148 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="Activity name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="Activity zone">
-        <el-select v-model="form.region" placeholder="please select your zone">
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-col :span="11">
-          <el-date-picker v-model="form.date1" type="date" placeholder="Pick a date" style="width: 100%;" />
-        </el-col>
-        <el-col :span="2" class="line">-</el-col>
-        <el-col :span="11">
-          <el-time-picker v-model="form.date2" type="fixed-time" placeholder="Pick a time" style="width: 100%;" />
-        </el-col>
-      </el-form-item>
-      <el-form-item label="Instant delivery">
-        <el-switch v-model="form.delivery" />
-      </el-form-item>
-      <el-form-item label="Activity type">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="Online activities" name="type" />
-          <el-checkbox label="Promotion activities" name="type" />
-          <el-checkbox label="Offline activities" name="type" />
-          <el-checkbox label="Simple brand exposure" name="type" />
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="Resources">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="Sponsor" />
-          <el-radio label="Venue" />
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="Activity form">
-        <el-input v-model="form.desc" type="textarea" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>
-    </el-form>
+    <el-card class="box-card">
+      <div slot="header">
+        <span>个人信息</span>
+      </div>
+      <el-form ref="form" :model="form" :rules="rules" status-icon label-width="100px">
+        <el-form-item label="用户名">
+          <el-input v-model="form.name" disabled />
+        </el-form-item>
+        <el-form-item label="原密码" prop="originalPassword">
+          <el-input
+            v-model="form.originalPassword"
+            show-password
+            type="password"
+            placeholder="请输入原密码"
+            maxlength="16"
+            minlength="6"
+          />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="form.password"
+            show-password
+            type="password"
+            placeholder="请输入新密码"
+            maxlength="16"
+            minlength="6"
+          />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input
+            v-model="form.confirmPassword"
+            show-password
+            type="password"
+            placeholder="请确认密码"
+            maxlength="16"
+            minlength="6"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">确认修改</el-button>
+          <el-button @click="resetForm('registerForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
   </div>
 </template>
 
 <script>
+import { updateManager } from '@/api/manager'
+
 export default {
   data() {
+    const validateOriginalPassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入原密码'))
+      } else {
+        callback()
+      }
+    }
+    const checkPassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        const passwordVerifier = /^.*(?=.{6,16})(?=.*[a-zA-Z]).*$/
+        if (passwordVerifier.test(value)) {
+          callback()
+        } else {
+          callback(new Error('输入6-16位密码，需包含英文字母和数字'))
+        }
+      }
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.form.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       form: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        password: '',
+        originalPassword: '',
+        confirmPassword: '',
+        id: undefined,
+      },
+      rules: {
+        originalPassword: [
+          { validator: validateOriginalPassword, trigger: 'blur' }
+        ],
+        password: [
+          { validator: checkPassword, trigger: ['blur', 'change'] }
+        ],
+        confirmPassword: [
+          { validator: validatePassword, trigger: 'blur' }
+        ],
       }
     }
   },
+  created() {
+    this.form.name = this.$store.getters.name
+    this.form.id = this.$store.getters.token
+  },
   methods: {
     onSubmit() {
-      this.$message('submit!')
-    },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
+      this.$refs['form'].validate(valid => {
+        if (!valid) {
+          return
+        }
+        const data = new FormData()
+        data.append('id', this.form.id)
+        data.append('oldPassword', this.form.originalPassword)
+        data.append('newPassword', this.form.password)
+        updateManager(data).then(response => {
+          if (response !== 0) {
+            this.$message.error('更新密码失败，请重试')
+          } else {
+            this.$message.success('密码更新成功')
+            this.resetForm('form')
+          }
+        })
       })
-    }
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+      this.form.name = this.$store.getters.name
+      this.form.id = this.$store.getters.token
+    },
   }
 }
 </script>
 
 <style scoped>
-.line{
-  text-align: center;
-}
+  .app-container{
+    display: flex;
+  }
+
+  .box-card {
+    width: 550px;
+    margin: 40px auto;
+  }
 </style>
 

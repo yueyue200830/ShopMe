@@ -62,3 +62,11 @@ export function resetManagerPassword(data) {
     data
   })
 }
+
+export function validManagerName(query) {
+  return request({
+    url: '/manager/name/check',
+    method: 'get',
+    params: query
+  })
+}

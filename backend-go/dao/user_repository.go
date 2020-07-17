@@ -94,7 +94,6 @@ func (u *UserRepository) UpdatePassword(id int, oldPassword, newPassword string)
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}
-
 	return nil
 }
 

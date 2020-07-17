@@ -1,6 +1,9 @@
 package dao
 
-import "backend-go/entity"
+import (
+	"backend-go/entity"
+	"errors"
+)
 
 var managerRepository *ManagerRepository
 
@@ -45,6 +48,35 @@ func (m *ManagerRepository) UpdateManager(manager *entity.Manager) error {
 	return db.Save(&manager).Error
 }
 
+func (m *ManagerRepository) UpdateManagerPassword(id int, oldPassword, newPassword string) error {
+	tx := db.Begin()
+
+	manager := &entity.Manager{ID: id}
+	if err := tx.First(&manager).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if manager.Password != oldPassword {
+		tx.Rollback()
+		return errors.New("wrong password")
+	}
+	if err := tx.Model(&manager).Update("password", newPassword).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *ManagerRepository) CreateManager(manager *entity.Manager) error {
 	return db.Create(&manager).Error
+}
+
+func (m *ManagerRepository) GetManagerIDByName(name string) int {
+	var manager entity.Manager
+	db.Select("id").Where("name = ?", name).First(&manager)
+	return manager.ID
 }
