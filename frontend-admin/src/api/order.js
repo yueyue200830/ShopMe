@@ -31,3 +31,10 @@ export function getOrderDetail(query) {
     params: query
   })
 }
+
+export function getRecentData() {
+  return request({
+    url: '/order/recent',
+    method: 'get',
+  })
+}

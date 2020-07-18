@@ -3,6 +3,7 @@ package service
 import (
 	"backend-go/dao"
 	"backend-go/entity"
+	"time"
 )
 
 var orderService *OrderService
@@ -25,10 +26,6 @@ func (o *OrderService) GetOrder(id int) *entity.DetailOrderWithProducts {
 	detailOrder := &entity.DetailOrderWithProducts{Order: *order, Products: products}
 	return detailOrder
 }
-
-//func (o *OrderService) GetUserOrders(userID int) []entity.Order {
-//	return o.orderRepository.GetOrdersByID(userID)
-//}
 
 func (o *OrderService) GetUserOrderNumber(userID int) (number int) {
 	return o.orderRepository.GetOrderNumberByID(userID)
@@ -99,4 +96,27 @@ func (o *OrderService) GetOrders(page, pageSize int) ([]entity.OrderWithUser, in
 		num = o.orderRepository.GetOrderNumber()
 	}
 	return orders, num, status
+}
+
+func (o *OrderService) GetOrderNumber() int {
+	return o.orderRepository.GetOrderNumber()
+}
+
+func (o *OrderService) GetOrderTotal() float32 {
+	return o.orderRepository.GetFinishOrderSum()
+}
+
+func (o *OrderService) GetRecentData() ([]string, []int, []float32) {
+	//data := make([]entity.OrderCount, 7)
+	date := make([]string, 7)
+	num := make([]int, 7)
+	sum := make([]float32, 7)
+	t := time.Now()
+	for i := 0; i < 7; i++ {
+		data := o.orderRepository.GetOrderDataByDate(t.AddDate(0, 0, i-7))
+		date[i] = data.Date
+		num[i] = data.Num
+		sum[i] = data.Total
+	}
+	return date, num, sum
 }

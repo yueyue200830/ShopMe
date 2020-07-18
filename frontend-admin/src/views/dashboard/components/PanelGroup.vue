@@ -7,9 +7,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            新增访客
+            用户量
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="userNum" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -20,9 +20,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            Messages
+            产品数
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="productNum" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -33,9 +33,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            昨日营业额
+            营业额
           </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="sum" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -46,9 +46,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            昨日订单数
+            订单数
           </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="orderNum" :duration="3600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -57,12 +57,32 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import { getDashboardData } from '@/api/manager'
 
 export default {
   components: {
     CountTo
   },
+  data() {
+    return {
+      userNum: 0,
+      productNum: 0,
+      orderNum: 0,
+      sum: 0,
+    }
+  },
+  created() {
+    this.getData()
+  },
   methods: {
+    getData() {
+      getDashboardData().then(response => {
+        this.userNum = response.user
+        this.productNum = response.product
+        this.orderNum = response.order
+        this.sum = response.sum
+      })
+    }
   }
 }
 </script>
@@ -141,7 +161,7 @@ export default {
         float: right;
         font-weight: bold;
         margin: 26px;
-        margin-left: 0px;
+        margin-left: 0;
 
         .card-panel-text {
           line-height: 18px;

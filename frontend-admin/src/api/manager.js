@@ -70,3 +70,10 @@ export function validManagerName(query) {
     params: query
   })
 }
+
+export function getDashboardData() {
+  return request({
+    url: '/manager/main',
+    method: 'get',
+  })
+}

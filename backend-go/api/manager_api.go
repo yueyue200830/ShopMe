@@ -23,6 +23,7 @@ func managerApiRegister(router *gin.Engine) {
 	router.DELETE("/manager", curd.deleteManager)
 	router.PUT("/manager/password/reset", curd.resetPassword)
 	router.GET("/manager/name/check", curd.checkManagerNameExist)
+	router.GET("/manager/main", curd.getMainData)
 }
 
 func (m *ManagerController) managerLogin(c *gin.Context) {
@@ -162,4 +163,18 @@ func (m *ManagerController) checkManagerNameExist(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, exist)
+}
+
+func (m *ManagerController) getMainData(c *gin.Context) {
+	user := service.GetUserService().GetUserNumber()
+	product := service.GetProductService().GetProductNumber(0)
+	order := service.GetOrderService().GetOrderNumber()
+	sum := service.GetOrderService().GetOrderTotal()
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": user,
+		"product": product,
+		"order": order,
+		"sum": sum,
+	})
 }

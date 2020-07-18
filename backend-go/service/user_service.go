@@ -139,3 +139,7 @@ func (u *UserService) UpdateUserInfo(user *entity.User) int {
 
 	return u.userRepository.UpdateNameAndEmail(user)
 }
+
+func (u *UserService) GetUserNumber() int {
+	return u.userRepository.GetUserNumber()
+}

@@ -17,7 +17,7 @@ func GetCategoryRepository() *CategoryRepository {
 
 func (c *CategoryRepository) GetAllCategories() []entity.Category {
 	var categories []entity.Category
-	db.Find(&categories)
+	db.Order("id").Find(&categories)
 	return categories
 }
 

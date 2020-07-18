@@ -45,6 +45,9 @@
   .card-title {
     font-size: 16px;
     line-height: 2em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .card-price {

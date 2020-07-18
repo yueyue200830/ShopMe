@@ -2,7 +2,7 @@
   <user-product-component>
     <el-carousel height="500px" class="main-carousel" trigger="click">
       <el-carousel-item v-for="banner in banners" :key="banner.id">
-        <el-image :src="banner.bannerPath"/>
+        <el-image :src="banner.bannerPath" @click="clickBanner(banner)" class="banner-img"/>
       </el-carousel-item>
     </el-carousel>
     <div class="product-list" v-for="category in promoteProducts" :key="category.title">
@@ -37,8 +37,8 @@
       }
     },
     created() {
-      this.getPromoteProducts()
       this.getBanner()
+      this.getPromoteProducts()
     },
     methods: {
       showMore(category) {
@@ -67,6 +67,9 @@
             }
             this.promoteProducts = promoteProducts
           })
+      },
+      clickBanner(banner) {
+        this.$router.push(`/product/${banner.productID}`)
       }
     }
   }
@@ -77,6 +80,10 @@
     margin: 20px 0;
     border-radius: 5px;
     padding: 0 5px;
+  }
+
+  .banner-img:hover {
+    cursor: pointer;
   }
 
   .product-list-title {

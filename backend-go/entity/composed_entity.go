@@ -43,3 +43,9 @@ type OrderWithUser struct {
 	Order
 	Name string `json:"name"`
 }
+
+type OrderCount struct {
+	Date  string  `json:"date"`
+	Total float32 `json:"sum"`
+	Num   int     `json:"num"`
+}

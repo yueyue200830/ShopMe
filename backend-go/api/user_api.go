@@ -26,6 +26,7 @@ func userApiRegister(router *gin.Engine) {
 	router.PUT("/userPassword", curd.updatePassword)
 	router.GET("/user", curd.getUserInfo)
 	router.PUT("/user", curd.updateUserInfo)
+	router.GET("/user/number", curd.getUserNumber)
 }
 
 func (u *UserController) getAll(c *gin.Context) {
@@ -174,4 +175,9 @@ func (u *UserController) getUsers(c *gin.Context) {
 			"list": users,
 		},
 	})
+}
+
+func (u *UserController) getUserNumber(c *gin.Context) {
+	num := u.userService.GetUserNumber()
+	c.JSON(http.StatusOK, num)
 }

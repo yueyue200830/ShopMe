@@ -134,3 +134,15 @@ func (o *OrderRepository) InsertOrderAndProducts(orderProducts *entity.DetailOrd
 
 	return nil, orderID
 }
+
+func (o *OrderRepository) GetFinishOrderSum() float32 {
+	var s []float32
+	db.Table("orders").Where("status = ?", entity.Finished).Select("sum(sum) as total").Limit(1).Pluck("total", &s)
+	return s[0]
+}
+
+func (o *OrderRepository) GetOrderDataByDate(t time.Time) (val entity.OrderCount) {
+	val.Date = t.Format("2006-01-02")
+	db.Table("orders").Where("datediff ( finish_time, ? ) = 0", val.Date).Select("sum(sum) as total, count(*) as num").Limit(1).Scan(&val)
+	return val
+}

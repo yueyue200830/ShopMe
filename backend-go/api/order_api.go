@@ -22,6 +22,7 @@ func orderApiRegister(router *gin.Engine) {
 	router.POST("/payOrder", curd.payOrder)
 	router.POST("/order", curd.newOrder)
 	router.POST("/order/finish", curd.finishOrder)
+	router.GET("/order/recent", curd.getRecentData)
 }
 
 func (o *OrderController) getOrder(c *gin.Context) {
@@ -152,5 +153,14 @@ func (o *OrderController) getOrders(c *gin.Context) {
 			"total": num,
 			"list":  orders,
 		},
+	})
+}
+
+func (o *OrderController) getRecentData(c *gin.Context) {
+	date, num, sum := o.orderService.GetRecentData()
+	c.JSON(http.StatusOK, gin.H{
+		"date": date,
+		"num": num,
+		"sum": sum,
 	})
 }

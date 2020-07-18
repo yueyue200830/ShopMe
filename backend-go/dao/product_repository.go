@@ -23,13 +23,13 @@ func (p *ProductRepository) GetAllProducts() []entity.Product {
 
 func (p *ProductRepository) GetNewProducts(num int) []entity.Product {
 	var products []entity.Product
-	db.Limit(num).Find(&products)
+	db.Order("id desc").Limit(num).Find(&products)
 	return products
 }
 
 func (p *ProductRepository) GetNewProductsOnCategory(num, categoryID int) []entity.Product {
 	var products []entity.Product
-	db.Where("category_id = ?", categoryID).Limit(num).Find(&products)
+	db.Where("category_id = ?", categoryID).Order("id desc").Limit(num).Find(&products)
 	return products
 }
 
@@ -76,5 +76,17 @@ func (p *ProductRepository) UpdateProduct(product *entity.Product) error {
 }
 
 func (p *ProductRepository) DeleteProduct(id int) error {
-	return db.Where("id = ?", id).Delete(&entity.Product{}).Error
+	tx := db.Begin()
+
+	if err := tx.Where("product_id = ?", id).Delete(&entity.ProductDetail{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Where("id = ?", id).Delete(&entity.Product{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

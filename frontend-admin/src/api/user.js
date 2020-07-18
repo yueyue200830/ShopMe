@@ -7,3 +7,10 @@ export function getUsers(query) {
     params: query
   })
 }
+
+export function getUserNumber() {
+  return request({
+    url: '/user/number',
+    method: 'get',
+  })
+}

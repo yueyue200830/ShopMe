@@ -27,7 +27,7 @@ func (p *ProductService) GetAllProducts() []entity.Product {
 
 func (p *ProductService) GetPromoteProducts() []entity.PromoteSection {
 	num := 8
-	promoteSections := make([]entity.PromoteSection, 0)
+	var promoteSections []entity.PromoteSection
 	promoteSections = append(promoteSections, entity.PromoteSection{Title: "新品上市", Products: p.productRepository.GetNewProducts(num)})
 	categories := dao.GetCategoryRepository().GetAllCategories()
 	for _, category := range categories {
@@ -89,8 +89,7 @@ func (p *ProductService) UpdateProduct(product *entity.Product) int {
 }
 
 func (p *ProductService) DeleteProduct(id int) int {
-	// todo: delete product image & product detail as well
-	// todo: consider those product in the order
+	// todo: delete product image as well
 	err := p.productRepository.DeleteProduct(id)
 	if err != nil {
 		return 1
