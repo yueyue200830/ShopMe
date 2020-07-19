@@ -73,7 +73,6 @@
           .then(response => {
             if (response.data.code !== 0){
               this.$message.error("页面请求错误")
-              // todo: add error module
             } else {
               let products = response.data.data
               for (let i = 0; i < products.length; i++) {

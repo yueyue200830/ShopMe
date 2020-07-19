@@ -11,6 +11,7 @@ import UserInfo from '../views/UserInfo';
 import UserOrders from '../views/UserOrders';
 import Order from '../views/Order';
 import UserPassword from '../views/UserPassword';
+import page404 from '../views/404';
 
 Vue.use(VueRouter)
 
@@ -38,33 +39,82 @@ const routes = [
   }, {
     path: '/cart',
     name: 'ShoppingCart',
-    component: ShoppingCart
+    component: ShoppingCart,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('Authorization') == null) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
   }, {
     path: '/checkout',
     name: 'Checkout',
     component: Checkout,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('Authorization') == null) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
   }, {
     path: '/user/info',
     name: 'UserInfo',
-    component: UserInfo
+    component: UserInfo,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('Authorization') == null) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
   }, {
     path: '/user/orders',
     name: 'UserOrders',
-    component: UserOrders
+    component: UserOrders,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('Authorization') == null) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
   }, {
     path: '/user/order',
     name: 'UserOrder',
     component: Order,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('Authorization') == null) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
   }, {
     path: '/user/password',
     name: 'UserPassword',
-    component: UserPassword
+    component: UserPassword,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('Authorization') == null) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
+  }, {
+    path: '/404',
+    component: page404,
+    hidden: true
+  }, {
+    path: '*',
+    redirect: '/404',
+    hidden: true
   }
 ]
 
 const router = new VueRouter({
-  // todo: add 404 not found to path '*'
-  mode: 'history',
+  // mode: 'history',
   routes
 })
 

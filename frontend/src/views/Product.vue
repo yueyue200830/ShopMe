@@ -73,7 +73,6 @@
           .then(response => {
             if (response.data.code !== 0) {
               this.$message.error('加载产品信息失败')
-              // todo: should add error page
             } else {
               let p = response.data.data
               p['image'] = '/api/productImage/' + p['image']

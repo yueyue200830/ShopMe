@@ -139,7 +139,7 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
+        path: 'http://shopme.eastasia.cloudapp.azure.com/#/',
         meta: { title: '前台首页', icon: 'link' }
       }
     ]
