@@ -49,8 +49,8 @@
 </template>
 
 <script>
-  import {mapMutations} from 'vuex'
-  import UserFooter from '../components/UserFooter';
+  import { mapMutations } from 'vuex'
+  import UserFooter from '../components/UserFooter'
 
   export default {
     name: 'UserLogin',
@@ -73,8 +73,14 @@
             this.$http
               .post('/api/userLogin', this.loginForm)
               .then(response => {
-                if (response.data !== 0) {
-                  this.userLogin({Authorization: response.data, name: this.loginForm.name})
+                const { code, token } = response.data
+                if (code !== 0) {
+                  const user = {
+                    Authorization: code,
+                    name: this.loginForm.name,
+                    token: token
+                  }
+                  this.userLogin(user)
                   this.$router.push('/')
                 } else {
                   this.$message.error('用户名或密码错误，请重试！')

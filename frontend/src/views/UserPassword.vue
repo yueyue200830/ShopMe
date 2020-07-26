@@ -58,10 +58,11 @@
 </template>
 
 <script>
-  import UserProductComponent from '../components/UserProductComponent';
+  import UserProductComponent from '../components/UserProductComponent'
+
   export default {
     name: 'UserPassword',
-    components: {UserProductComponent},
+    components: { UserProductComponent },
     computed: {
       hasLoggedIn() {
         return this.$store.getters.hasLoggedIn

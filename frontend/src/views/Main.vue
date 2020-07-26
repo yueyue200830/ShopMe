@@ -24,12 +24,12 @@
 </template>
 
 <script>
-  import UserProductComponent from '../components/UserProductComponent';
-  import ProductCard from '../components/ProductCard';
+  import UserProductComponent from '../components/UserProductComponent'
+  import ProductCard from '../components/ProductCard'
 
   export default {
     name: 'Main',
-    components: {ProductCard, UserProductComponent},
+    components: { ProductCard, UserProductComponent },
     data() {
       return {
         banners: [],

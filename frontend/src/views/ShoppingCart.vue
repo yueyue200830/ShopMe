@@ -75,12 +75,12 @@
 </template>
 
 <script>
-  import UserHeader from '../components/UserHeader';
-  import UserFooter from '../components/UserFooter';
+  import UserHeader from '../components/UserHeader'
+  import UserFooter from '../components/UserFooter'
 
   export default {
     name: 'ShoppingCart',
-    components: {UserFooter, UserHeader},
+    components: { UserFooter, UserHeader },
     computed: {
       hasLoggedIn() {
         return this.$store.getters.hasLoggedIn
@@ -145,7 +145,7 @@
           })
           .then(response => {
             if (response.data !== 0) {
-              this.$message.error("修改失败，请重试")
+              this.$message.error('修改失败，请重试')
               this.getCartProducts()
             } else {
               this.calculateSum()
@@ -162,7 +162,7 @@
           })
           .then(response => {
             if (response.data !== 0) {
-              this.$message.error("删除商品失败，请重试")
+              this.$message.error('删除商品失败，请重试')
               this.getCartProducts()
             } else {
               for (let i = 0; i < this.products.length; i++) {

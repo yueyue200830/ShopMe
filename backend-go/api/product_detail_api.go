@@ -12,7 +12,7 @@ type ProductDetailController struct {
 	productDetailService *service.ProductDetailService
 }
 
-func productDetailApiRegister(router *gin.Engine) {
+func productDetailApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := ProductDetailController{service.GetProductDetailService()}
 	router.GET("/productDetails", curd.getDetailsByID)
 	router.GET("/productDetail/:name", curd.getDetailByName)

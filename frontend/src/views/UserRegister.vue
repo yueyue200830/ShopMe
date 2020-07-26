@@ -64,11 +64,11 @@
 </template>
 
 <script>
-  import UserFooter from '../components/UserFooter';
+  import UserFooter from '../components/UserFooter'
 
   export default {
     name: 'UserRegister',
-    components: {UserFooter},
+    components: { UserFooter },
     data() {
       const checkName = (rule, value, callback) => {
         if (value === '') {

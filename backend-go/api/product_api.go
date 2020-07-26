@@ -12,7 +12,7 @@ type ProductController struct {
 	productService *service.ProductService
 }
 
-func productApiRegister(router *gin.Engine) {
+func productApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := ProductController{service.GetProductService()}
 	router.GET("/allProducts", curd.getAllProducts)
 	router.GET("/promoteProducts", curd.getPromoteProducts)

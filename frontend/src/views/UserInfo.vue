@@ -51,7 +51,8 @@
 </template>
 
 <script>
-  import UserProductComponent from '../components/UserProductComponent';
+  import UserProductComponent from '../components/UserProductComponent'
+  import { mapState } from 'vuex'
 
   export default {
     name: 'UserInfo',
@@ -63,6 +64,9 @@
       userID() {
         return this.$store.getters.getUserID
       },
+      ...mapState([
+         'Token',
+       ])
     },
     data() {
       const checkName = (rule, value, callback) => {
@@ -152,6 +156,10 @@
                 id: this.userID,
                 name: this.infoForm.name,
                 email: this.infoForm.email
+              }, {
+                headers: {
+                  Bearer: this.Token == null ? "" : this.Token
+                }
               })
               .then(response => {
                 if (response.data !== 0) {
@@ -167,6 +175,9 @@
       getInfo() {
         this.$http
           .get('/api/user', {
+            headers: {
+              Bearer: this.Token == null ? "" : this.Token
+            },
             params: {
               id: this.userID
             }

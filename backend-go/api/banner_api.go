@@ -12,7 +12,7 @@ type BannerController struct {
 	bannerService *service.BannerService
 }
 
-func bannerApiRegister(router *gin.Engine) {
+func bannerApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := BannerController{service.GetBannerService()}
 	router.GET("/mainBanners", curd.getMainBanners)
 	router.GET("/banner/image/:banner", curd.getBannerImage)

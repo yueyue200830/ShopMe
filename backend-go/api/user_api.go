@@ -3,6 +3,7 @@ package api
 import (
 	"backend-go/entity"
 	"backend-go/service"
+	"backend-go/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -12,7 +13,7 @@ type UserController struct {
 	userService *service.UserService
 }
 
-func userApiRegister(router *gin.Engine) {
+func userApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := UserController{service.GetUserService()}
 	//router.GET("/getAll", curd.getAll)
 	//router.GET("/getUsers", curd.getAllUsers)
@@ -24,8 +25,8 @@ func userApiRegister(router *gin.Engine) {
 	router.POST("/register", curd.register)
 	router.GET("/avatar/:image", curd.getAvatar)
 	router.PUT("/userPassword", curd.updatePassword)
-	router.GET("/user", curd.getUserInfo)
-	router.PUT("/user", curd.updateUserInfo)
+	authRouter.GET("/user", curd.getUserInfo)
+	authRouter.PUT("/user", curd.updateUserInfo)
 	router.GET("/user/number", curd.getUserNumber)
 }
 
@@ -47,6 +48,7 @@ func (u *UserController) getAllUsers(c *gin.Context) {
 // return 0 for not found or other error input cases
 func (u *UserController) userLogin(c *gin.Context) {
 	var user entity.User
+	var token string
 	id := -1
 	if err := c.ShouldBindJSON(&user); err != nil {
 		id = 0
@@ -56,9 +58,17 @@ func (u *UserController) userLogin(c *gin.Context) {
 	}
 	if id == -1 {
 		id = u.userService.ValidateUser(user)
+		var err error
+		token, err = utils.GenerateToken("name", 32)
+		if err != nil {
+			id = 1
+		}
 	}
 
-	c.JSON(http.StatusOK, id)
+	c.JSON(http.StatusOK, gin.H{
+		"code": id,
+		"token": token,
+	})
 }
 
 // Return 1 when name exist, 0 otherwise

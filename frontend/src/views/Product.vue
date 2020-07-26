@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import UserProductComponent from '../components/UserProductComponent';
+  import UserProductComponent from '../components/UserProductComponent'
 
   export default {
     name: 'Product',

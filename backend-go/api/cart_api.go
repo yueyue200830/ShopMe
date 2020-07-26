@@ -12,7 +12,7 @@ type CartController struct {
 	cartService *service.CartService
 }
 
-func cartApiRegister(router *gin.Engine) {
+func cartApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := CartController{service.GetCartService()}
 	router.GET("/cardProducts", curd.getCardProducts)
 	router.POST("/cardProduct", curd.addProduct)

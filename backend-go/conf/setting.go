@@ -10,6 +10,7 @@ var (
 
 	RunMode string
 	HTTPPort int
+	JwtSecret string
 )
 
 func init() {
@@ -21,6 +22,7 @@ func init() {
 
 	loadBase()
 	loadServer()
+	loadApp()
 }
 
 func loadBase() {
@@ -33,6 +35,14 @@ func loadServer() {
 		fmt.Println("Fail to get server section in config: ", err)
 	}
 	HTTPPort = sec.Key("HTTP_PORT").MustInt(8000)
+}
+
+func loadApp() {
+	sec, err := Cfg.GetSection("app")
+	if err != nil {
+		fmt.Println("Fail to get app section in config: ", err)
+	}
+	JwtSecret = sec.Key("JWT_SECRET").MustString("Test1Secret")
 }
 
 func GetDatabaseSetting() (dbType, con string) {

@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     Authorization: localStorage.getItem('Authorization') ? localStorage.getItem('Authorization') : null,
+    Token: localStorage.getItem('Token'),
   },
   getters: {
     hasLoggedIn: (state) => {
@@ -31,12 +32,14 @@ export default new Vuex.Store({
       let authorization = JSON.stringify({ key: user.Authorization, time: time, name: user.name })
       state.Authorization = authorization
       localStorage.setItem('Authorization', authorization)
+      localStorage.setItem('Token', user.token)
     },
     // 删除token
     userLogOut (state) {
-      console.log("store log out")
       state.Authorization = null
+      state.Token = null
       localStorage.removeItem('Authorization')
+      localStorage.removeItem('Token')
     },
     // 检查token是否过期
     checkLogin (state) {
@@ -49,6 +52,7 @@ export default new Vuex.Store({
       if (time - expireTime > 1000 * 60 * 60 * 2) {
         state.Authorization = null
         localStorage.removeItem('Authorization')
+        localStorage.removeItem('Token')
       }
     },
     changeUserName (state, name) {

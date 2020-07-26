@@ -12,7 +12,7 @@ type OrderController struct {
 	orderService *service.OrderService
 }
 
-func orderApiRegister(router *gin.Engine) {
+func orderApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := OrderController{service.GetOrderService()}
 	router.GET("/order", curd.getOrder)
 	router.GET("/orderNumber", curd.getUserOrderNumber)

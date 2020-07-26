@@ -12,7 +12,7 @@ type ManagerController struct {
 	managerService *service.ManagerService
 }
 
-func managerApiRegister(router *gin.Engine) {
+func managerApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := ManagerController{service.GetManagerService()}
 	router.POST("/manager/login", curd.managerLogin)
 	router.GET("/manager/info", curd.getManagerInfo)

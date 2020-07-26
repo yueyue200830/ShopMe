@@ -23,8 +23,8 @@
 </template>
 
 <script>
-  import UserProductComponent from '../components/UserProductComponent';
-  import ProductCard from '../components/ProductCard';
+  import UserProductComponent from '../components/UserProductComponent'
+  import ProductCard from '../components/ProductCard'
 
   export default {
     name: 'Category',
@@ -45,7 +45,7 @@
     },
     watch: {
       '$route': function (to) {
-        if (to.name === "Category") {
+        if (to.name === 'Category') {
           this.categoryID = to.params.id
           this.getProductNumber()
           this.getProducts()
@@ -72,7 +72,7 @@
           })
           .then(response => {
             if (response.data.code !== 0){
-              this.$message.error("页面请求错误")
+              this.$message.error('页面请求错误')
             } else {
               let products = response.data.data
               for (let i = 0; i < products.length; i++) {

@@ -12,7 +12,7 @@ type CategoryController struct {
 	categoryService *service.CategoryService
 }
 
-func categoryApiRegister(router *gin.Engine) {
+func categoryApiRegister(router, authRouter *gin.RouterGroup) {
 	curd := CategoryController{service.GetCategoryService()}
 	router.GET("/allCategories", curd.getAllCategories)
 	router.GET("/categories", curd.getCategories)
